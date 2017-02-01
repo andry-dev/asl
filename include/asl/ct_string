@@ -1,0 +1,199 @@
+#pragma once
+
+#include "asl/types"
+
+#ifdef _MSC_VER
+	#if _MSC_VER <= 1800
+		#error "[ASL] asl::ct_string doesn't support MSVC < 14."
+	#endif
+#endif
+
+#include <cstdint>
+
+namespace asl
+{
+	class ct_string
+	{
+	public:
+		template<asl::sizei N>
+		constexpr explicit ct_string(char const (&str) [N])
+			: m_str(str), m_size(N)
+		{
+
+		}
+
+		constexpr auto size() const { return m_size; }
+
+		constexpr auto c_str() const { return m_str; }
+		constexpr char operator[](asl::sizei index) const
+        { return m_str[index]; }
+
+		constexpr bool operator>(ct_string& oth) const noexcept
+		{
+			if (m_size > oth.m_size)
+				return true;
+
+			return false;
+		}
+
+		template <asl::sizei N>
+		constexpr bool operator>(const char (&oth)[N]) const noexcept
+		{
+			if (m_size > N)
+				return true;
+
+			return false;
+		}
+
+		constexpr bool operator>(const char* oth)
+		{
+			if (m_size > strlen(oth))
+				return true;
+
+			return false;
+		}
+
+		constexpr bool operator<(ct_string& oth) const noexcept
+		{
+			if (m_size < oth.m_size)
+				return true;
+
+			return false;
+		}
+
+		template <asl::sizei N>
+		constexpr bool operator<(const char(&oth)[N]) const noexcept
+		{
+			if (m_size < N)
+				return true;
+
+			return false;
+		}
+
+		constexpr bool operator<(const char* oth)
+		{
+			if (m_size < strlen(oth))
+				return true;
+
+			return false;
+		}
+
+		constexpr bool operator<=(ct_string& oth) const noexcept
+		{
+			if (m_size <= oth.m_size)
+				return true;
+
+			return false;
+		}
+
+		constexpr bool operator<=(const char* oth)
+		{
+			if (m_size <= strlen(oth))
+				return true;
+
+			return false;
+		}
+
+		template <asl::sizei N>
+		constexpr bool operator<=(const char(&oth)[N]) const noexcept
+		{
+			if (m_size <= N)
+				return true;
+
+			return false;
+		}
+
+		constexpr bool operator>=(ct_string& oth) const noexcept
+		{
+			if (m_size >= oth.m_size)
+				return true;
+
+			return false;
+		}
+
+		template <asl::sizei N>
+		constexpr bool operator>=(const char(&oth)[N]) const noexcept
+		{
+			if (m_size >= N)
+				return true;
+
+			return false;
+		}
+
+		constexpr bool operator>=(const char* oth)
+		{
+			if (m_size >= strlen(oth))
+				return true;
+
+			return false;
+		}
+
+		template <asl::sizei N>
+		constexpr bool operator==(const char(&oth)[N]) const noexcept
+		{
+			if (N != m_size)
+				return false;
+
+			for (asl::mut_sizei i = 0; i < m_size; ++i)
+			{
+				if (m_str[i] != oth[i])
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		constexpr bool operator==(ct_string& oth) const noexcept
+		{
+			if (oth.m_size != m_size)
+				return false;
+
+			for (asl::mut_sizei i = 0; i < m_size; ++i)
+			{	
+				if (m_str[i] != oth.m_str[i])
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+
+		constexpr bool operator==(const char* oth)
+		{
+			if (m_size != strlen(oth))
+				return false;
+
+			for (asl::mut_sizei i = 0; i < m_size; ++i)
+			{
+				if (m_str[i] != oth[i])
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+	private:
+
+		constexpr inline asl::sizei strlen(const char* str) const noexcept
+		{
+			asl::mut_sizei size = 0;
+
+			for (asl::mut_sizei i = 0; str[i] != '\0'; ++i)
+			{
+				++size;
+			}
+
+			return size;
+		}
+
+		const char* m_str;
+		asl::mut_sizei m_size;
+	};
+} // namespace asl
+// vim: ft=cpp

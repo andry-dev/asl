@@ -1,0 +1,53 @@
+#pragma once
+
+#include "include/gsl/assert"
+
+namespace asl
+{
+	template <typename T>
+	class WriteOnce
+	{
+	public:
+		WriteOnce()
+			: locked(false)
+		{
+
+		}
+
+		explicit WriteOnce(T val)
+			: value(val), locked(true)
+		{
+
+		}
+
+		~WriteOnce() = default;
+
+		WriteOnce(const WriteOnce& rhs) = default;
+		WriteOnce& operator=(const WriteOnce& rhs) = default;
+
+		WriteOnce(WriteOnce&& rhs) = default;
+		WriteOnce& operator=(WriteOnce&& rhs) = default;
+
+		operator T() { return value; }
+
+		WriteOnce& operator=(const T& rhs)
+		{
+
+#ifdef GSL_ASSERT_WITH_MESSAGE
+			Ensures(!locked, "You're trying to write to a write-once value");
+#else
+			Ensures(!locked);
+#endif
+
+			value = rhs;
+
+			return *this;
+		}
+
+	private:
+		T value;
+		bool locked;
+	};
+} // namespace asl
+
+// vim: ft=cpp

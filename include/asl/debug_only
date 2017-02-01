@@ -1,0 +1,57 @@
+#pragma once
+
+namespace asl
+{
+	template <typename T>
+	class debug_only
+	{
+	public:
+#ifndef NDEBUG
+		debug_only() {  }
+		explicit debug_only(const T& oth) : value(oth) {  }
+		explicit debug_only(T oth) : value(oth) { }
+		debug_only(const debug_only& oth) : value(oth.value) {  }
+
+		~debug_only() = default;
+
+		debug_only& operator=(const T& oth)
+		{
+			value = oth;
+			return *this;
+		}
+
+		void operator++(int) { value++; }
+		void operator--(int) { value--; }
+
+		T* operator&() { return &value; }
+		operator const T() const { return value; }
+
+		T& operator->() { return value; }
+		const T& operator->() const { return value; }
+#else // NDEBUG
+		debug_only() {  }
+		explicit debug_only(const T&) {  }
+		explicit debug_only(T oth) { }
+		debug_only(const debug_only&) {  }
+
+		~debug_only() = default;
+
+		debug_only& operator=(const T&) { return *this; }
+
+		void operator++(int) {  }
+		void operator--(int) {  }
+
+		debug_only& operator+=(const T&) { return *this; }
+		debug_only& operator-=(const T&) { return *this; }
+		debug_only& operator&=(const T&) { return *this; }
+		debug_only& operator|=(const T&) { return *this; }
+		debug_only& operator^=(const T&) { return *this; }
+#endif
+	private:
+#ifndef NDEBUG
+		T value;
+#endif
+	};
+} // namespace asl
+
+// vim: ft=cpp

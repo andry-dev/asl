@@ -1,0 +1,54 @@
+#pragma once
+
+#include <cstdio>
+#include <exception>
+
+#ifndef GSL_ASSERT_WITH_MESSAGE
+
+	#ifndef NDEBUG
+
+		#define Expects(cond) \
+			if (!(cond)) { \
+				std::printf("Assertion failed at line %d : %s\n", __LINE__, __FILE__); \
+				std::terminate(); \
+			}
+
+		#define Ensures(cond) \
+			if (!(cond)) { \
+				std::printf("Assertion failed in line %d in file %s\n", __LINE__, __FILE__); \
+				std::terminate(); \
+			}
+
+	#else // NDEBUG
+
+		#define Expects(cond)
+		#define Ensures(cond)
+
+	#endif // NDEBUG
+
+#else // GSL_ASSERT_WITH_MESSAGE
+
+	#ifndef NDEBUG
+
+		#define Expects(cond, msg) \
+			if (!(cond)) { \
+				std::printf(msg "\nAssertion failed at line %d : %s\n", __LINE__, __FILE__); \
+				std::terminate(); \
+			}
+
+		#define Ensures(cond, msg) \
+			if (!(cond)) { \
+				std::printf(msg "\nAssertion failed in line %d in file %s\n", __LINE__, __FILE__); \
+				std::terminate(); \
+			}
+
+	#else // NDEBUG
+
+		#define Expects(cond, msg)
+		#define Ensures(cond, msg)
+
+	#endif // NDEBUG
+
+#endif // GSL_ASSERT_WITH_MESSAGE
+
+// vim: ft=cpp

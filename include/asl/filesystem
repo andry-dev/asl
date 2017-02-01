@@ -1,0 +1,90 @@
+#pragma once
+
+#include "asl/detect_features"
+
+#if ASL_CXX17_FILESYSTEM
+	#ifdef ASL_CXX17_FILESYSTEM_EXPERIMENTAL
+		#include <experimental/filesystem>
+		namespace std_fs = std::experimental::filesystem;
+	#else
+		#include <filesystem>
+		namespace std_fs = std::filesystem;
+	#endif
+#else
+	#ifdef ASL_WIN32
+		#define WIN32_LEAN_AND_MEAN
+		#include <windows.h>
+	#elif defined(ASL_POSIX)
+		#include <sys/types.h>
+		#include <sys/stat.h>
+		#include <unistd.h>
+	#elif defined(ASL_UNKNOWN_PLATFORM)
+		#error "[asl/filesystem] Your platform is unsupported :("
+	#endif
+#endif
+
+
+#if ASL_CXX17_STRING_VIEW
+	#ifdef ASL_CXX17_STRING_VIEW_EXPERIMENTAL
+		#include <experimental/string_view>
+		namespace std_sv = std::experimental;
+	#else
+		#include <string_view>
+		namespace std_sv = std;
+	#endif
+#endif
+
+namespace asl
+{
+namespace fs
+{
+
+	namespace details
+	{
+		#if !ASL_CXX17_FILESYSTEM
+		inline bool fileExists(const char* path)
+		{
+			#if defined(ASL_WIN32)
+				WIN32_FIND_DATA FindFileData;
+				HANDLE handle = FindFirstFile(path, &FindFileData);
+				int found = handle != INVALID_HANDLE_VALUE;
+				if (found) 
+				{
+					FindClose(handle);
+				}
+				return found;
+			#elif defined(ASL_POSIX)
+
+				struct stat status;
+				if(::stat(path, &status) == 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+
+			#endif
+		}
+		#endif // !ASL_CXX17_FILESYSTEM
+	}
+
+
+	#ifdef ASL_CXX17_STRING_VIEW
+	inline bool fileExists(const std_sv::string_view& file)
+	#else
+	inline bool fileExists(const char* file)
+	#endif
+	{
+		#if ASL_CXX17_FILESYSTEM
+			return std_fs::exists(file);
+		#else
+			return details::fileExists(file);
+		#endif
+	}
+
+} // namespace fs
+} // namespace asl
+
+// vim: ft=cpp
