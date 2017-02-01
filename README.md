@@ -21,7 +21,7 @@ some basic functionality.
    wrappers around `algorithm` or new functions like a for_each that works on
    std::tuple)
  * asl/types - Rust-like typedefs, const by default, mutable versions provided
-   with *mut_*
+   with the *mut* prefix
  * asl/write_once - A class that stores a write-once type. Useful if you need a
    const variable but you can't initialize it with lambdas for a reason or
    another
