@@ -66,7 +66,7 @@ namespace gsl
 						"There is an implicit conversion going on");
 		}
 
-        template <typename U, class = std::enable_if_t<!std::is_same<U, T>::value>>
+		template <typename U, class = std::enable_if_t<!std::is_same<U, T>::value>>
 		span(U* arr, asl::sizei size)
 		{
 			static_assert(std::is_same<U, T>::value, "The types are not the same");
@@ -82,7 +82,7 @@ namespace gsl
 						"There is an implicit conversion going on");
 		}
 
-        template <typename U, asl::sizei N, class = std::enable_if_t<!std::is_same<U, T>::value>>
+		template <typename U, asl::sizei N, class = std::enable_if_t<!std::is_same<U, T>::value>>
 		span& operator=(U (&arr)[N])
 		{
 			static_assert(std::is_same<U, T>::value, "The types are not the same");
