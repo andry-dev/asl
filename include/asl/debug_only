@@ -7,9 +7,8 @@ namespace asl
 	{
 	public:
 #ifndef NDEBUG
-		debug_only() {  }
-		explicit debug_only(const T& oth) : value(oth) {  }
-		explicit debug_only(T oth) : value(oth) { }
+		debug_only(const T& oth) : value(oth) {  }
+
 		debug_only(const debug_only& oth) : value(oth.value) {  }
 
 		~debug_only() = default;
@@ -28,6 +27,7 @@ namespace asl
 
 		T& operator->() { return value; }
 		const T& operator->() const { return value; }
+
 #else // NDEBUG
 		debug_only() {  }
 		explicit debug_only(const T&) {  }
