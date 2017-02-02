@@ -11,6 +11,8 @@ namespace gsl
 		static_assert(std::is_assignable<T&, std::nullptr_t>::value,
 					"Can't assign a nullptr to a not_null<T>");
 
+		static_assert(std::is_pointer<T>::value, "The type in the span is not a pointer");
+
 	public:
 		explicit not_null(T t)
 			: m_ptr(t)
@@ -28,13 +30,13 @@ namespace gsl
 		not_null(const not_null& oth) = default;
 		not_null& operator=(const not_null& oth) = default;
 
-		template <typename U, class = std::enable_if<std::is_convertible<T, U>::value>>
+		template <typename U, class = std::enable_if_t<std::is_convertible<T, U>::value>>
 		not_null(const not_null<U>& oth) noexcept
 		{
 			*this = oth;
 		}
 
-		template <typename U, class = std::enable_if<std::is_convertible<T, U>::value>>
+		template <typename U, class = std::enable_if<!std::is_convertible<T, U>::value>>
 		not_null& operator=(const not_null<U>& oth) noexcept
 		{
 			m_ptr = oth.m_ptr;

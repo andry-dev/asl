@@ -27,3 +27,6 @@ some basic functionality.
    another
 
  * gsl/assert - Ensures() and Expects() that supports additional messages
+ * gsl/not_null - A way to say that a pointer must not be null
+ * gsl/span - A view on an array
+ * gsl/util - Various utilities
