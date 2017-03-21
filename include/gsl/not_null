@@ -43,6 +43,7 @@ namespace gsl
 			return *this;
 		}
 
+
 		not_null(std::nullptr_t) = delete;
 		not_null& operator=(std::nullptr_t) = delete;
 		not_null(int) = delete;

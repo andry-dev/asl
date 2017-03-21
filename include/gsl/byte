@@ -1,0 +1,98 @@
+#pragma once
+
+#include <type_traits>
+#include <cstdint>
+
+namespace gsl
+{
+
+enum class byte : std::uint8_t { };
+
+template <class IntegerType, class = std::enable_if_t<std::is_integral<IntegerType>::value>>
+inline constexpr byte& operator<<=(byte& b, IntegerType shift) noexcept
+{
+    return b = byte(static_cast<unsigned char>(b) << shift);
+}
+
+template <class IntegerType, class = std::enable_if_t<std::is_integral<IntegerType>::value>>
+inline constexpr byte operator<<(byte b, IntegerType shift) noexcept
+{
+    return byte(static_cast<unsigned char>(b) << shift);
+}
+
+template <class IntegerType, class = std::enable_if_t<std::is_integral<IntegerType>::value>>
+inline constexpr byte& operator>>=(byte& b, IntegerType shift) noexcept
+{
+    return b = byte(static_cast<unsigned char>(b) >> shift);
+}
+
+template <class IntegerType, class = std::enable_if_t<std::is_integral<IntegerType>::value>>
+inline constexpr byte operator>>(byte b, IntegerType shift) noexcept
+{
+    return byte(static_cast<unsigned char>(b) >> shift);
+}
+
+inline constexpr byte& operator|=(byte& l, byte r) noexcept
+{
+    return l = byte(static_cast<unsigned char>(l) | static_cast<unsigned char>(r));
+}
+
+inline constexpr byte operator|(byte l, byte r) noexcept
+{
+    return byte(static_cast<unsigned char>(l) | static_cast<unsigned char>(r));
+}
+
+inline constexpr byte& operator&=(byte& l, byte r) noexcept
+{
+    return l = byte(static_cast<unsigned char>(l) & static_cast<unsigned char>(r));
+}
+
+inline constexpr byte operator&(byte l, byte r) noexcept
+{
+    return byte(static_cast<unsigned char>(l) & static_cast<unsigned char>(r));
+}
+
+inline constexpr byte& operator^=(byte& l, byte r) noexcept
+{
+    return l = byte(static_cast<unsigned char>(l) ^ static_cast<unsigned char>(r));
+}
+
+inline constexpr byte operator^(byte l, byte r) noexcept
+{
+    return byte(static_cast<unsigned char>(l) ^ static_cast<unsigned char>(r));
+}
+
+inline constexpr byte operator~(byte b) noexcept
+{
+  return byte(~static_cast<unsigned char>(b));
+}
+
+template <class IntegerType, class = std::enable_if_t<std::is_integral<IntegerType>::value>>
+inline constexpr IntegerType to_integer(byte b) noexcept
+{
+    return static_cast<IntegerType>(b);
+}
+
+inline constexpr byte to_byte(std::uint8_t val)
+{
+  return static_cast<byte>(val);
+}
+
+template <typename T>
+inline constexpr byte to_byte(T t)
+{
+  static_assert(std::is_same<T, std::uint8_t>::value, "If you are converting a costant to a byte use the template version");
+  return to_byte(t);
+}
+
+template <std::size_t N>
+inline constexpr byte to_byte()
+{
+  static_assert(N >= 0 && N <= 255, "LOL");
+  return static_cast<byte>(N);
+}
+
+
+} // namespace gsl
+
+// vim: ft=cpp
