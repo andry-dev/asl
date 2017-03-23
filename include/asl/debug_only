@@ -3,7 +3,7 @@
 namespace asl
 {
 	template <typename T>
-	class debug_only
+	class [[maybe_unused]] debug_only
 	{
 	public:
 #ifndef NDEBUG
@@ -30,8 +30,8 @@ namespace asl
 
 #else // NDEBUG
 		debug_only() {  }
-		explicit debug_only(const T&) {  }
-		explicit debug_only(T oth) { }
+		debug_only(const T&) {  }
+		explicit debug_only(const T) { }
 		debug_only(const debug_only&) {  }
 
 		~debug_only() = default;

@@ -2,14 +2,9 @@
 
 #include "asl/detect_features"
 
-#if ASL_CXX17_FILESYSTEM
-	#ifdef ASL_CXX17_FILESYSTEM_EXPERIMENTAL
-		#include <experimental/filesystem>
-		namespace std_fs = std::experimental::filesystem;
-	#else
-		#include <filesystem>
-		namespace std_fs = std::filesystem;
-	#endif
+#if ASL_CXX17_FILESYSTEM && !defined(ASL_CXX17_FILESYSTEM_EXPERIMENTAL)
+	#include <filesystem>
+	namespace std_fs = std::filesystem;
 #else
 	#ifdef ASL_WIN32
 		#define WIN32_LEAN_AND_MEAN
@@ -41,7 +36,7 @@ namespace fs
 
 	namespace details
 	{
-		#if !ASL_CXX17_FILESYSTEM
+		#if !ASL_CXX17_FILESYSTEM || defined(ASL_CXX17_FILESYSTEM_EXPERIMENTAL)
 		inline bool fileExists(const char* path)
 		{
 			#if defined(ASL_WIN32)
@@ -77,10 +72,10 @@ namespace fs
 	inline bool fileExists(const char* file)
 	#endif
 	{
-		#if ASL_CXX17_FILESYSTEM
+		#if ASL_CXX17_FILESYSTEM && !defined(ASL_CXX17_FILESYSTEM_EXPERIMENTAL)
 			return std_fs::exists(file);
 		#else
-			return details::fileExists(file);
+			return details::fileExists(file.data());
 		#endif
 	}
 
