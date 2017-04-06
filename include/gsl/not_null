@@ -14,7 +14,7 @@ namespace gsl
 		static_assert(std::is_pointer<T>::value, "The type in the span is not a pointer");
 
 	public:
-		explicit not_null(T t)
+		not_null(T t)
 			: m_ptr(t)
 		{
 			sanity_check();

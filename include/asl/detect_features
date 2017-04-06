@@ -10,7 +10,8 @@
 #ifdef __has_include
 	#if __has_include(<optional>)
 		#define ASL_CXX17_OPTIONAL 1
-	#elif __has_include(<experimental/optional>)
+	#endif
+	#if __has_include(<experimental/optional>)
 		#define ASL_CXX17_OPTIONAL 1
 		#define ASL_CXX17_OPTIONAL_EXPERIMENTAL
 	#else
@@ -19,7 +20,9 @@
 
 	#if __has_include(<filesystem>)
 		#define ASL_CXX17_FILESYSTEM 1
-	#elif __has_include(<experimental/filesystem>)
+	#endif
+
+	#if __has_include(<experimental/filesystem>)
 		#define ASL_CXX17_FILESYSTEM_EXPERIMENTAL
 		#define ASL_CXX17_FILESYSTEM 1
 	#else
@@ -28,7 +31,9 @@
 
 	#if __has_include(<string_view>)
 		#define ASL_CXX17_STRING_VIEW 1
-	#elif __has_include(<experimental/string_view>)
+	#endif
+
+	#if __has_include(<experimental/string_view>)
 		#define ASL_CXX17_STRING_VIEW_EXPERIMENTAL
 		#define ASL_CXX17_STRING_VIEW 1
 	#else
