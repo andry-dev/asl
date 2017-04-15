@@ -38,13 +38,20 @@ namespace asl
 	{
 		
 	}
-	
+
 	template <asl::sizei Index = 0, typename Func, typename... Ts>
 	inline constexpr std::enable_if_t<Index < sizeof...(Ts), void>
 	for_each_tuple(std::tuple<Ts...> t, Func f)
 	{
 		f(std::get<Index>(t));
 		for_each_tuple<Index + 1, Func, Ts...>(t, f);
+	}
+
+	// this hack
+	template <typename... Args, typename F>
+	void for_each_arg(F f, Args&&... args)
+	{
+		[](...){}((f(std::forward<Args>(args)), 0)...);
 	}
 } // namespace asl
 
