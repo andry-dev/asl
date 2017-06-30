@@ -66,7 +66,7 @@ namespace gsl
 	private:
 		void sanity_check() const noexcept
 		{
-			Ensures(m_ptr != nullptr);
+			Ensures(m_ptr != nullptr, "The pointer is null");
 		}
 
 		not_null& operator++() = delete;

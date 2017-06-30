@@ -2,6 +2,9 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <utility>
+
+#include "gsl/assert"
 
 namespace asl
 {
@@ -40,6 +43,117 @@ namespace asl
 
 	using sizei = const std::size_t;
 	using mut_sizei = std::size_t;
+
+	
+	template <typename T, T min, T max, typename Phantom>
+	class constraint
+	{
+	public:
+		template <typename U>
+		explicit constexpr constraint(U&& val) noexcept
+			: m_val(std::forward<U>(val))
+		{
+			sanity_check(std::forward<U>(val));
+		}
+
+		constexpr constraint(const constraint& oth) noexcept
+		{
+			sanity_check(oth.m_val);
+			m_val = oth.m_val;
+		}
+
+		constexpr constraint& operator=(constraint oth) noexcept
+		{
+			sanity_check(oth.m_val);
+			std::swap(m_val, oth.m_val);
+			return *this;
+		}
+
+		constexpr constraint(constraint&& oth) noexcept
+		{
+			sanity_check(std::move(oth.m_val));
+			m_val = std::move(oth.m_val);
+		}
+
+		constexpr constraint& operator=(constraint&& oth) noexcept
+		{
+			sanity_check(std::move(oth.m_val));
+			m_val = std::move(oth.m_val);
+
+			return *this;
+		}
+
+		constexpr T get() const noexcept
+		{
+			return m_val;
+		}
+
+		constexpr void set(T val) noexcept
+		{
+			sanity_check(val);
+			m_val = val;
+		}
+	private:
+		T m_val;
+
+		void sanity_check(T val)
+		{
+			Expects(val >= min,
+					"[asl/constraint] This variable reached the lower limit");
+
+			Expects(val <= max,
+					"[asl/constraint] This variable reached the upper limit");
+		}
+	};
+
+	template <typename T, typename Phantom>
+	class strong_typedef
+	{
+	public:
+
+		template <typename U>
+		explicit constexpr strong_typedef(U&& val) noexcept
+			: m_val(std::forward<U>(val))
+		{
+		}
+
+		constexpr strong_typedef(const strong_typedef& oth) noexcept
+		{
+			m_val = oth.m_val;
+		}
+
+		constexpr strong_typedef& operator=(strong_typedef oth) noexcept
+		{
+			std::swap(m_val, oth.m_val);
+			return *this;
+		}
+
+		constexpr strong_typedef(strong_typedef&& oth) noexcept
+		{
+			m_val = std::move(oth.m_val);
+		}
+
+		constexpr strong_typedef& operator=(strong_typedef&& oth) noexcept
+		{
+			m_val = std::move(oth.m_val);
+
+			return *this;
+		}
+
+		constexpr T get() const noexcept
+		{
+			return m_val;
+		}
+
+		template <typename U>
+		constexpr void set(U&& val) noexcept
+		{
+			m_val = std::forward<U>(val);
+		}
+	private:
+		T m_val;
+	};
+
 } // namespace asl
 
 // vim: ft=cpp

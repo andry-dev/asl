@@ -7,13 +7,13 @@
 
 	#ifndef NDEBUG
 
-		#define Expects(cond) \
+		#define Expects(cond, _) \
 			if (!(cond)) { \
 				std::printf("Assertion failed at line %d : %s\n", __LINE__, __FILE__); \
 				std::terminate(); \
 			}
 
-		#define Ensures(cond) \
+		#define Ensures(cond, _) \
 			if (!(cond)) { \
 				std::printf("Assertion failed in line %d in file %s\n", __LINE__, __FILE__); \
 				std::terminate(); \
@@ -21,8 +21,8 @@
 
 	#else // NDEBUG
 
-		#define Expects(cond)
-		#define Ensures(cond)
+		#define Expects(cond, _)
+		#define Ensures(cond, _)
 
 	#endif // NDEBUG
 
