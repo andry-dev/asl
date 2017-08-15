@@ -44,6 +44,121 @@ namespace asl
 	using sizei = const std::size_t;
 	using mut_sizei = std::size_t;
 
+	template <typename T, T min, typename Phantom>
+	class lower_limit
+	{
+	public:
+		template <typename U>
+		explicit constexpr lower_limit(U&& val) noexcept
+			: m_val(std::forward<U>(val))
+		{
+			sanity_check(m_val);
+		}
+
+		constexpr lower_limit(const lower_limit& oth) noexcept
+		{
+			sanity_check(oth.m_val);
+			m_val = oth.m_val;
+		}
+
+		constexpr lower_limit& operator=(lower_limit oth) noexcept
+		{
+			sanity_check(oth.m_val);
+			std::swap(m_val, oth.m_val);
+			return *this;
+		}
+
+		constexpr lower_limit(lower_limit&& oth) noexcept
+		{
+			m_val = std::move(oth.m_val);
+			sanity_check(m_val);
+		}
+
+		constexpr lower_limit& operator=(lower_limit&& oth) noexcept
+		{
+			m_val = std::move(oth.m_val);
+			sanity_check(m_val);
+
+			return *this;
+		}
+
+		constexpr T get() const noexcept
+		{
+			return m_val;
+		}
+
+		constexpr void set(T val) noexcept
+		{
+			m_val = val;
+			sanity_check(m_val);
+		}
+	private:
+		T m_val;
+
+		void sanity_check(T val)
+		{
+			Expects(val >= min,
+					"[asl/lower_limit] This variable reached the lower limit");
+		}
+	};
+
+	template <typename T, T max, typename Phantom>
+	class upper_limit
+	{
+	public:
+		template <typename U>
+		explicit constexpr upper_limit(U&& val) noexcept
+			: m_val(std::forward<U>(val))
+		{
+			sanity_check(m_val);
+		}
+
+		constexpr upper_limit(const upper_limit& oth) noexcept
+		{
+			sanity_check(oth.m_val);
+			m_val = oth.m_val;
+		}
+
+		constexpr upper_limit& operator=(upper_limit oth) noexcept
+		{
+			sanity_check(oth.m_val);
+			std::swap(m_val, oth.m_val);
+			return *this;
+		}
+
+		constexpr upper_limit(upper_limit&& oth) noexcept
+		{
+			m_val = std::move(oth.m_val);
+			sanity_check(m_val);
+		}
+
+		constexpr upper_limit& operator=(upper_limit&& oth) noexcept
+		{
+			m_val = std::move(oth.m_val);
+			sanity_check(m_val);
+
+			return *this;
+		}
+
+		constexpr T get() const noexcept
+		{
+			return m_val;
+		}
+
+		constexpr void set(T val) noexcept
+		{
+			m_val = val;
+			sanity_check(m_val);
+		}
+	private:
+		T m_val;
+
+		void sanity_check(T val)
+		{
+			Expects(val <= max,
+					"[asl/upper_limit] This variable reached the upper limit");
+		}
+	};
 	
 	template <typename T, T min, T max, typename Phantom>
 	class constraint
@@ -53,7 +168,7 @@ namespace asl
 		explicit constexpr constraint(U&& val) noexcept
 			: m_val(std::forward<U>(val))
 		{
-			sanity_check(std::forward<U>(val));
+			sanity_check(m_val);
 		}
 
 		constexpr constraint(const constraint& oth) noexcept
@@ -71,14 +186,14 @@ namespace asl
 
 		constexpr constraint(constraint&& oth) noexcept
 		{
-			sanity_check(std::move(oth.m_val));
 			m_val = std::move(oth.m_val);
+			sanity_check(m_val);
 		}
 
 		constexpr constraint& operator=(constraint&& oth) noexcept
 		{
-			sanity_check(std::move(oth.m_val));
 			m_val = std::move(oth.m_val);
+			sanity_check(m_val);
 
 			return *this;
 		}
@@ -90,8 +205,8 @@ namespace asl
 
 		constexpr void set(T val) noexcept
 		{
-			sanity_check(val);
 			m_val = val;
+			sanity_check(m_val);
 		}
 	private:
 		T m_val;

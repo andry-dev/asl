@@ -33,11 +33,7 @@ namespace asl
 		WriteOnce& operator=(const T& rhs)
 		{
 
-#ifdef GSL_ASSERT_WITH_MESSAGE
 			Ensures(!locked, "You're trying to write to a write-once value");
-#else
-			Ensures(!locked);
-#endif
 
 			value = rhs;
 
