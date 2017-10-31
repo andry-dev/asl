@@ -8,266 +8,177 @@
 
 namespace asl
 {
-	using num = const int;
-	using mut_num = int;
+    using num = const int;
+    using mut_num = int;
 
-	using u8 = const std::uint8_t;
-	using mut_u8 = std::uint8_t;
+    using u8 = const std::uint8_t;
+    using mut_u8 = std::uint8_t;
 
-	using i8 = const std::int8_t;
-	using mut_i8 = std::int8_t;
+    using i8 = const std::int8_t;
+    using mut_i8 = std::int8_t;
 
-	using u16 = const std::uint16_t;
-	using mut_u16 = std::uint16_t;
+    using u16 = const std::uint16_t;
+    using mut_u16 = std::uint16_t;
 
-	using i16 = const std::int16_t;
-	using mut_i16 = std::int16_t;
+    using i16 = const std::int16_t;
+    using mut_i16 = std::int16_t;
 
-	using u32 = const std::uint32_t;
-	using mut_u32 = std::uint32_t;
+    using u32 = const std::uint32_t;
+    using mut_u32 = std::uint32_t;
 
-	using i32 = const std::int32_t;
-	using mut_i32 = std::int32_t;
+    using i32 = const std::int32_t;
+    using mut_i32 = std::int32_t;
 
-	using u64 = const std::uint64_t;
-	using mut_u64 = std::uint64_t;
+    using u64 = const std::uint64_t;
+    using mut_u64 = std::uint64_t;
 
-	using i64 = const std::int64_t;
-	using mut_i64 = std::int64_t;
+    using i64 = const std::int64_t;
+    using mut_i64 = std::int64_t;
 
-	using f32 = const float;
-	using mut_f32 = float;
+    using f32 = const float;
+    using mut_f32 = float;
 
-	using f64 = const double;
-	using mut_f64 = double;
+    using f64 = const double;
+    using mut_f64 = double;
 
-	using sizei = const std::size_t;
-	using mut_sizei = std::size_t;
+    using sizei = const std::size_t;
+    using mut_sizei = std::size_t;
 
-	template <typename T, T min, typename Phantom>
-	class lower_limit
-	{
-	public:
-		template <typename U>
-		explicit constexpr lower_limit(U&& val) noexcept
-			: m_val(std::forward<U>(val))
-		{
-			sanity_check(m_val);
-		}
+    template <typename T, typename Constraint, typename Phantom>
+    class constrained_type
+    {
+    public:
+        explicit constexpr constrained_type(T val) noexcept
+            : m_val(val)
+        {
+            Constraint::check(val);
+        }
 
-		constexpr lower_limit(const lower_limit& oth) noexcept
-		{
-			sanity_check(oth.m_val);
-			m_val = oth.m_val;
-		}
+        constexpr constrained_type(const constrained_type& oth) noexcept
+            : m_val(oth.m_val)
+        {
+            Constraint::check(oth.m_val);
+        }
 
-		constexpr lower_limit& operator=(lower_limit oth) noexcept
-		{
-			sanity_check(oth.m_val);
-			std::swap(m_val, oth.m_val);
-			return *this;
-		}
+        constexpr constrained_type& operator=(constrained_type oth) noexcept
+        {
+            Constraint::check(oth.m_val);
+            std::swap(m_val, oth.m_val);
+            return *this;
+        }
 
-		constexpr lower_limit(lower_limit&& oth) noexcept
-		{
-			m_val = std::move(oth.m_val);
-			sanity_check(m_val);
-		}
+        constexpr constrained_type(constrained_type&& oth) noexcept
+        {
+            m_val = oth.m_val;
+            Constraint::check(m_val);
+        }
 
-		constexpr lower_limit& operator=(lower_limit&& oth) noexcept
-		{
-			m_val = std::move(oth.m_val);
-			sanity_check(m_val);
+        constexpr constrained_type& operator=(constrained_type&& oth) noexcept
+        {
+            if (this != &oth)
+            {
+                m_val = oth.m_val;
+                Constraint::check(m_val);
+            }
 
-			return *this;
-		}
+            return *this;
+        }
 
-		constexpr T get() const noexcept
-		{
-			return m_val;
-		}
+        constexpr T get() const noexcept
+        {
+            return m_val;
+        }
 
-		constexpr void set(T val) noexcept
-		{
-			m_val = val;
-			sanity_check(m_val);
-		}
-	private:
-		T m_val;
+        constexpr void set(T val) noexcept
+        {
+            Constraint::check(val);
+           m_val = val; 
+        }
+    private:
+        T m_val;
+    };
 
-		void sanity_check(T val)
-		{
-			Expects(val >= min,
-					"[asl/lower_limit] This variable reached the lower limit");
-		}
-	};
+    template <typename T, T min>
+    struct lower_limit
+    {
+        static void check(T val)
+        {
+            Expects(val >= min,
+                    "[asl/lower_limit] This variable reached the lower limit");
+        }
+    };
 
-	template <typename T, T max, typename Phantom>
-	class upper_limit
-	{
-	public:
-		template <typename U>
-		explicit constexpr upper_limit(U&& val) noexcept
-			: m_val(std::forward<U>(val))
-		{
-			sanity_check(m_val);
-		}
+    template <typename T, T max>
+    struct upper_limit
+    {
+        static void check(T val)
+        {
+            Expects(val <= max,
+                    "[asl/upper_limit] This variable reached the upper limit");
+        }
+    };
+    
+    template <typename T, T min, T max>
+    struct range_constraint
+    {
+        static void check(T val)
+        {
+            Expects(val >= min,
+                    "[asl/range_constraint] This variable reached the lower limit");
 
-		constexpr upper_limit(const upper_limit& oth) noexcept
-		{
-			sanity_check(oth.m_val);
-			m_val = oth.m_val;
-		}
+            Expects(val <= max,
+                    "[asl/range_constraint] This variable reached the upper limit");
+        }
+    };
 
-		constexpr upper_limit& operator=(upper_limit oth) noexcept
-		{
-			sanity_check(oth.m_val);
-			std::swap(m_val, oth.m_val);
-			return *this;
-		}
+    template <typename T, typename Phantom>
+    class strong_typedef
+    {
+    public:
 
-		constexpr upper_limit(upper_limit&& oth) noexcept
-		{
-			m_val = std::move(oth.m_val);
-			sanity_check(m_val);
-		}
+        explicit constexpr strong_typedef(T val) noexcept
+            : m_val(val)
+        {
+        }
 
-		constexpr upper_limit& operator=(upper_limit&& oth) noexcept
-		{
-			m_val = std::move(oth.m_val);
-			sanity_check(m_val);
+        constexpr strong_typedef(const strong_typedef& oth) noexcept
+        {
+            m_val = oth.m_val;
+        }
 
-			return *this;
-		}
+        constexpr strong_typedef& operator=(strong_typedef oth) noexcept
+        {
+            std::swap(m_val, oth.m_val);
+            return *this;
+        }
 
-		constexpr T get() const noexcept
-		{
-			return m_val;
-		}
+        constexpr strong_typedef(strong_typedef&& oth) noexcept
+        {
+            m_val = oth.m_val;
+        }
 
-		constexpr void set(T val) noexcept
-		{
-			m_val = val;
-			sanity_check(m_val);
-		}
-	private:
-		T m_val;
+        constexpr strong_typedef& operator=(strong_typedef&& oth) noexcept
+        {
+            if (this != &oth)
+            {
+                m_val = oth.m_val;
+            }
 
-		void sanity_check(T val)
-		{
-			Expects(val <= max,
-					"[asl/upper_limit] This variable reached the upper limit");
-		}
-	};
-	
-	template <typename T, T min, T max, typename Phantom>
-	class constraint
-	{
-	public:
-		template <typename U>
-		explicit constexpr constraint(U&& val) noexcept
-			: m_val(std::forward<U>(val))
-		{
-			sanity_check(m_val);
-		}
+            return *this;
+        }
 
-		constexpr constraint(const constraint& oth) noexcept
-		{
-			sanity_check(oth.m_val);
-			m_val = oth.m_val;
-		}
+        constexpr T get() const noexcept
+        {
+            return m_val;
+        }
 
-		constexpr constraint& operator=(constraint oth) noexcept
-		{
-			sanity_check(oth.m_val);
-			std::swap(m_val, oth.m_val);
-			return *this;
-		}
-
-		constexpr constraint(constraint&& oth) noexcept
-		{
-			m_val = std::move(oth.m_val);
-			sanity_check(m_val);
-		}
-
-		constexpr constraint& operator=(constraint&& oth) noexcept
-		{
-			m_val = std::move(oth.m_val);
-			sanity_check(m_val);
-
-			return *this;
-		}
-
-		constexpr T get() const noexcept
-		{
-			return m_val;
-		}
-
-		constexpr void set(T val) noexcept
-		{
-			m_val = val;
-			sanity_check(m_val);
-		}
-	private:
-		T m_val;
-
-		void sanity_check(T val)
-		{
-			Expects(val >= min,
-					"[asl/constraint] This variable reached the lower limit");
-
-			Expects(val <= max,
-					"[asl/constraint] This variable reached the upper limit");
-		}
-	};
-
-	template <typename T, typename Phantom>
-	class strong_typedef
-	{
-	public:
-
-		template <typename U>
-		explicit constexpr strong_typedef(U&& val) noexcept
-			: m_val(std::forward<U>(val))
-		{
-		}
-
-		constexpr strong_typedef(const strong_typedef& oth) noexcept
-		{
-			m_val = oth.m_val;
-		}
-
-		constexpr strong_typedef& operator=(strong_typedef oth) noexcept
-		{
-			std::swap(m_val, oth.m_val);
-			return *this;
-		}
-
-		constexpr strong_typedef(strong_typedef&& oth) noexcept
-		{
-			m_val = std::move(oth.m_val);
-		}
-
-		constexpr strong_typedef& operator=(strong_typedef&& oth) noexcept
-		{
-			m_val = std::move(oth.m_val);
-
-			return *this;
-		}
-
-		constexpr T get() const noexcept
-		{
-			return m_val;
-		}
-
-		template <typename U>
-		constexpr void set(U&& val) noexcept
-		{
-			m_val = std::forward<U>(val);
-		}
-	private:
-		T m_val;
-	};
+        constexpr void set(T val) noexcept
+        {
+            m_val = val;
+        }
+    private:
+        T m_val;
+    };
 
 } // namespace asl
 

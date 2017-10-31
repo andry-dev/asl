@@ -1,0 +1,83 @@
+#pragma once
+
+#include <string>
+#include "asl/types"
+
+namespace gsl
+{
+    template <typename CharT>
+    class basic_string_span
+    {
+    public:
+        template <std::size_t N>
+        constexpr basic_string_span(const CharT (&literal)[N])
+            : m_begin(literal), m_end(literal + N)
+        { }
+
+        constexpr basic_string_span(const CharT* ptr, asl::sizei size)
+            : m_begin(ptr), m_end(ptr + size)
+        { }
+
+        basic_string_span(const std::basic_string<CharT>& str)
+            : m_begin(str.begin()), m_end(str.end())
+        { }
+
+        constexpr CharT operator[](asl::sizei i) const
+        {
+            return (*m_begin + i);
+        }
+
+        constexpr asl::sizei size() const
+        {
+            return (m_end - m_begin);
+        }
+
+        operator const CharT*() const
+        {
+            return m_begin;
+        }
+
+        operator std::basic_string<CharT>() const
+        {
+            return { m_begin, size() };
+        }
+    private:
+
+        const CharT* m_begin;
+        const CharT* m_end;
+    };
+
+    using string_span = basic_string_span<char>;
+    using u16string_span = basic_string_span<char16_t>;
+    using u32string_span = basic_string_span<char32_t>;
+    using wstring_span = basic_string_span<wchar_t>;
+
+    namespace literals
+    {
+        inline constexpr string_span
+        operator""_ss(const char* str, asl::sizei size) noexcept
+        {
+            return { str, size };
+        }
+
+        inline constexpr u16string_span
+        operator""_ss(const char16_t* str, asl::sizei size) noexcept
+        {
+            return { str, size };
+        }
+
+        inline constexpr u32string_span
+        operator""_ss(const char32_t* str, asl::sizei size) noexcept
+        {
+            return { str, size };
+        }
+
+        inline constexpr wstring_span
+        operator""_ss(const wchar_t* str, asl::sizei size) noexcept
+        {
+            return { str, size };
+        }
+    }
+}
+
+// vim: ft=cpp

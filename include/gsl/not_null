@@ -5,81 +5,81 @@
 
 namespace gsl
 {
-	template <typename T>
-	class not_null
-	{
-		static_assert(std::is_assignable<T&, std::nullptr_t>::value,
-					"Can't assign a nullptr to a not_null<T>");
+    template <typename T>
+    class not_null
+    {
+        static_assert(std::is_assignable<T&, std::nullptr_t>::value,
+                    "Can't assign a nullptr to a not_null<T>");
 
-		static_assert(std::is_pointer<T>::value, "The type in the span is not a pointer");
+        static_assert(std::is_pointer<T>::value, "The type in the span is not a pointer");
 
-	public:
-		not_null(T t)
-			: m_ptr(t)
-		{
-			sanity_check();
-		}
+    public:
+        not_null(T t)
+            : m_ptr(t)
+        {
+            sanity_check();
+        }
 
-		not_null& operator=(const T& t) noexcept
-		{
-			m_ptr = t;
-			sanity_check();
-			return *this;
-		}
+        not_null& operator=(const T& t) noexcept
+        {
+            m_ptr = t;
+            sanity_check();
+            return *this;
+        }
 
-		not_null(const not_null& oth) = default;
-		not_null& operator=(const not_null& oth) = default;
+        not_null(const not_null& oth) = default;
+        not_null& operator=(const not_null& oth) = default;
 
-		template <typename U, class = std::enable_if_t<std::is_convertible<T, U>::value>>
-		not_null(const not_null<U>& oth) noexcept
-		{
-			*this = oth;
-		}
+        template <typename U, class = std::enable_if_t<std::is_convertible<T, U>::value>>
+        not_null(const not_null<U>& oth) noexcept
+        {
+            *this = oth;
+        }
 
-		template <typename U, class = std::enable_if<!std::is_convertible<T, U>::value>>
-		not_null& operator=(const not_null<U>& oth) noexcept
-		{
-			m_ptr = oth.m_ptr;
-			return *this;
-		}
+        template <typename U, class = std::enable_if<!std::is_convertible<T, U>::value>>
+        not_null& operator=(const not_null<U>& oth) noexcept
+        {
+            m_ptr = oth.m_ptr;
+            return *this;
+        }
 
 
-		not_null(std::nullptr_t) = delete;
-		not_null& operator=(std::nullptr_t) = delete;
-		not_null(int) = delete;
-		not_null& operator=(int) = delete;
+        not_null(std::nullptr_t) = delete;
+        not_null& operator=(std::nullptr_t) = delete;
+        not_null(int) = delete;
+        not_null& operator=(int) = delete;
 
-		T get() const noexcept
-		{
-			#ifdef _MSC_VER
-			__assume(m_ptr != nullptr);
-			#endif
-			return m_ptr;
-		}
+        T get() const noexcept
+        {
+            #ifdef _MSC_VER
+            __assume(m_ptr != nullptr);
+            #endif
+            return m_ptr;
+        }
 
-		operator T() const noexcept { return m_ptr; }
-		T operator->() const noexcept { return m_ptr; }
+        operator T() const noexcept { return m_ptr; }
+        T operator->() const noexcept { return m_ptr; }
 
-		bool operator==(const T& rhs) const { return m_ptr == rhs; }
-		bool operator!=(const T& rhs) const { return !(m_ptr == rhs); }
+        bool operator==(const T& rhs) const { return m_ptr == rhs; }
+        bool operator!=(const T& rhs) const { return !(m_ptr == rhs); }
 
-	private:
-		void sanity_check() const noexcept
-		{
-			Ensures(m_ptr != nullptr, "The pointer is null");
-		}
+    private:
+        void sanity_check() const noexcept
+        {
+            Ensures(m_ptr != nullptr, "The pointer is null");
+        }
 
-		not_null& operator++() = delete;
-		not_null& operator--() = delete;
-		not_null operator++(int) = delete;
-		not_null operator--(int) = delete;
-		not_null& operator+(asl::sizei) = delete;
-		not_null& operator+=(asl::sizei) = delete;
-		not_null& operator-(asl::sizei) = delete;
-		not_null& operator-=(asl::sizei) = delete;
+        not_null& operator++() = delete;
+        not_null& operator--() = delete;
+        not_null operator++(int) = delete;
+        not_null operator--(int) = delete;
+        not_null& operator+(asl::sizei) = delete;
+        not_null& operator+=(asl::sizei) = delete;
+        not_null& operator-(asl::sizei) = delete;
+        not_null& operator-=(asl::sizei) = delete;
 
-		T m_ptr;
-	};
+        T m_ptr;
+    };
 } // namespace gsl
 
 // vim: ft=cpp

@@ -5,49 +5,49 @@
 
 #ifndef GSL_ASSERT_WITH_MESSAGE
 
-	#ifndef NDEBUG
+    #ifndef NDEBUG
 
-		#define Expects(cond, _) \
-			if (!(cond)) { \
-				std::printf("Assertion failed at line %d : %s\n", __LINE__, __FILE__); \
-				std::terminate(); \
-			}
+        #define Expects(cond, _) \
+            if (!(cond)) { \
+                std::printf("Assertion failed at line %d : %s\n", __LINE__, __FILE__); \
+                std::terminate(); \
+            }
 
-		#define Ensures(cond, _) \
-			if (!(cond)) { \
-				std::printf("Assertion failed in line %d in file %s\n", __LINE__, __FILE__); \
-				std::terminate(); \
-			}
+        #define Ensures(cond, _) \
+            if (!(cond)) { \
+                std::printf("Assertion failed in line %d in file %s\n", __LINE__, __FILE__); \
+                std::terminate(); \
+            }
 
-	#else // NDEBUG
+    #else // NDEBUG
 
-		#define Expects(cond, _)
-		#define Ensures(cond, _)
+        #define Expects(cond, _)
+        #define Ensures(cond, _)
 
-	#endif // NDEBUG
+    #endif // NDEBUG
 
 #else // GSL_ASSERT_WITH_MESSAGE
 
-	#ifndef NDEBUG
+    #ifndef NDEBUG
 
-		#define Expects(cond, msg) \
-			if (!(cond)) { \
-				std::printf(msg "\nAssertion failed at line %d : %s\n", __LINE__, __FILE__); \
-				std::terminate(); \
-			}
+        #define Expects(cond, msg) \
+            if (!(cond)) { \
+                std::printf(msg "\nAssertion failed at line %d : %s\n", __LINE__, __FILE__); \
+                std::terminate(); \
+            }
 
-		#define Ensures(cond, msg) \
-			if (!(cond)) { \
-				std::printf(msg "\nAssertion failed in line %d in file %s\n", __LINE__, __FILE__); \
-				std::terminate(); \
-			}
+        #define Ensures(cond, msg) \
+            if (!(cond)) { \
+                std::printf(msg "\nAssertion failed in line %d in file %s\n", __LINE__, __FILE__); \
+                std::terminate(); \
+            }
 
-	#else // NDEBUG
+    #else // NDEBUG
 
-		#define Expects(cond, msg)
-		#define Ensures(cond, msg)
+        #define Expects(cond, msg)
+        #define Ensures(cond, msg)
 
-	#endif // NDEBUG
+    #endif // NDEBUG
 
 #endif // GSL_ASSERT_WITH_MESSAGE
 

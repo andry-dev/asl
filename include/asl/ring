@@ -1,0 +1,135 @@
+#pragma once
+
+#include "asl/types"
+#include "asl/meta"
+
+namespace asl
+{
+    template <typename T>
+    class ring_view
+    {
+    public:
+        using const_iterator = const T*;
+        using iterator = const_iterator;
+
+        constexpr ring_view(T* begin, T* end)
+            : m_begin(begin), m_end(end)
+        {
+
+        }
+
+        constexpr const T& operator[](const asl::sizei i) const
+        {
+            return *(m_begin + (i % size()));
+        }
+
+        constexpr std::size_t size() const
+        {
+            return m_end - m_begin;
+        }
+
+        constexpr iterator begin() const
+        {
+            return m_begin;
+        }
+
+        constexpr const_iterator cbegin() const
+        {
+            return m_begin;
+        }
+
+        constexpr iterator end() const
+        {
+            return m_end;
+        }
+
+        constexpr iterator cend() const
+        {
+            return m_end;
+        }
+
+    private:
+        T* m_begin;
+        T* m_end;
+    };
+
+    template <typename T, asl::sizei N>
+    class static_ring
+    {
+    public:
+        using const_iterator = const T*;
+        using iterator = T*;
+
+        constexpr static_ring()
+            : m_begin(m_data), m_end(m_data + N)
+        {
+
+        }
+
+        constexpr static_ring(std::initializer_list<T> lst)
+            : m_data(lst)
+        {
+            iterator it = m_begin;
+
+            for (const auto& i : lst)
+            {
+                new(it++) T(i);
+            }
+        }
+
+        constexpr const T& operator[](const asl::sizei i) const
+        {
+            return *(m_begin + (i % N));
+        }
+
+        constexpr std::size_t size() const
+        {
+            return N;
+        }
+
+        constexpr iterator begin() const
+        {
+            return m_begin;
+        }
+
+        constexpr const_iterator cbegin() const
+        {
+            return m_begin;
+        }
+
+        constexpr iterator end() const
+        {
+            return m_end;
+        }
+
+        constexpr const_iterator cend() const
+        {
+            return m_end;
+        }
+
+        template <typename Elem, typename = asl::enable_fwd_t<T, Elem>>
+        void push(Elem&& e)
+        {
+            *(m_begin + (m_curr % N)) = std::forward<Elem>(e);
+            ++m_curr;
+        }
+
+        T& front()
+        {
+            return *(m_begin + (toRing(m_curr - 1)));
+        }
+
+    private:
+        T m_data[N];
+        T* m_begin;
+        T* m_end;
+        std::size_t m_curr = 0;
+
+        std::size_t toRing(std::size_t num)
+        {
+            return num % N;
+        }
+    };
+}
+
+// vim: ft=cpp

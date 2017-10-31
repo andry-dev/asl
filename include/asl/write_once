@@ -4,46 +4,46 @@
 
 namespace asl
 {
-	template <typename T>
-	class WriteOnce
-	{
-	public:
-		WriteOnce()
-			: locked(false)
-		{
+    template <typename T>
+    class WriteOnce
+    {
+    public:
+        WriteOnce()
+            : locked(false)
+        {
 
-		}
+        }
 
-		explicit WriteOnce(T val)
-			: value(val), locked(true)
-		{
+        explicit WriteOnce(T val)
+            : value(val), locked(true)
+        {
 
-		}
+        }
 
-		~WriteOnce() = default;
+        ~WriteOnce() = default;
 
-		WriteOnce(const WriteOnce& rhs) = default;
-		WriteOnce& operator=(const WriteOnce& rhs) = default;
+        WriteOnce(const WriteOnce& rhs) = default;
+        WriteOnce& operator=(const WriteOnce& rhs) = default;
 
-		WriteOnce(WriteOnce&& rhs) = default;
-		WriteOnce& operator=(WriteOnce&& rhs) = default;
+        WriteOnce(WriteOnce&& rhs) = default;
+        WriteOnce& operator=(WriteOnce&& rhs) = default;
 
-		operator T() { return value; }
+        operator T() { return value; }
 
-		WriteOnce& operator=(const T& rhs)
-		{
+        WriteOnce& operator=(const T& rhs)
+        {
 
-			Ensures(!locked, "You're trying to write to a write-once value");
+            Ensures(!locked, "You're trying to write to a write-once value");
 
-			value = rhs;
+            value = rhs;
 
-			return *this;
-		}
+            return *this;
+        }
 
-	private:
-		T value;
-		bool locked;
-	};
+    private:
+        T value;
+        bool locked;
+    };
 } // namespace asl
 
 // vim: ft=cpp

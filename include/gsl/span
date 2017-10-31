@@ -6,144 +6,144 @@
 
 namespace gsl
 {
-	template <typename T>
-	class span
-	{
-	public:
-		span(T* ptr, asl::sizei size)
-			: m_ptr(ptr)
-			, m_size(size)
-		{
-			sanity_check();
-		}
+    template <typename T>
+    class span
+    {
+    public:
+        span(T* ptr, asl::sizei size)
+            : m_ptr(ptr)
+            , m_size(size)
+        {
+            sanity_check();
+        }
 
-		template <asl::sizei N>
-		span(T (&arr)[N])
-			: m_ptr(arr)
-			, m_size(N)
-		{
-			sanity_check();
-		}
+        template <asl::sizei N>
+        span(T (&arr)[N])
+            : m_ptr(arr)
+            , m_size(N)
+        {
+            sanity_check();
+        }
 
-		span(const span& oth) = default;
-		span& operator=(const span& rhs) = default;
+        span(const span& oth) = default;
+        span& operator=(const span& rhs) = default;
 
-		span(const span&& oth)
-			: m_ptr(oth.m_ptr)
-			, m_size(oth.m_size)
-		{
-			oth.m_ptr = nullptr;
-			oth.m_size = 0;
-			sanity_check();
-		}
+        span(const span&& oth)
+            : m_ptr(oth.m_ptr)
+            , m_size(oth.m_size)
+        {
+            oth.m_ptr = nullptr;
+            oth.m_size = 0;
+            sanity_check();
+        }
 
-		span& operator=(const span&& oth)
-		{
-			m_ptr = oth.m_ptr;
-			m_size = oth.m_size;
+        span& operator=(const span&& oth)
+        {
+            m_ptr = oth.m_ptr;
+            m_size = oth.m_size;
 
-			oth.m_ptr = nullptr;
-			oth.m_size = 0;
+            oth.m_ptr = nullptr;
+            oth.m_size = 0;
 
-			sanity_check();
+            sanity_check();
 
-			return *this;
-		}
+            return *this;
+        }
 
-		template <typename U, std::enable_if_t<!std::is_same<U, T>::value>>
-		span(const span<U>& oth)
-		{
-			static_assert(std::is_same<U, T>::value, "The types are not the same");
-			static_assert(!std::is_convertible<U*, T*>::value,
-						"There is an implicit conversion going on");
-		}
+        template <typename U, std::enable_if_t<!std::is_same<U, T>::value>>
+        span(const span<U>& oth)
+        {
+            static_assert(std::is_same<U, T>::value, "The types are not the same");
+            static_assert(!std::is_convertible<U*, T*>::value,
+                        "There is an implicit conversion going on");
+        }
 
-		template <typename U, std::enable_if_t<!std::is_same<U, T>::value>>
-		span& operator=(const span<U>& oth)
-		{
-			static_assert(std::is_same<U, T>::value, "The types are not the same");
-			static_assert(!std::is_convertible<U*, T*>::value,
-						"There is an implicit conversion going on");
-		}
+        template <typename U, std::enable_if_t<!std::is_same<U, T>::value>>
+        span& operator=(const span<U>& oth)
+        {
+            static_assert(std::is_same<U, T>::value, "The types are not the same");
+            static_assert(!std::is_convertible<U*, T*>::value,
+                        "There is an implicit conversion going on");
+        }
 
-		template <typename U, class = std::enable_if_t<!std::is_same<U, T>::value>>
-		span(U* arr, asl::sizei size)
-		{
-			static_assert(std::is_same<U, T>::value, "The types are not the same");
-			static_assert(!std::is_convertible<U*, T*>::value || std::is_same<T, U>::value,
-						"There is an implicit conversion going on");
-		}
+        template <typename U, class = std::enable_if_t<!std::is_same<U, T>::value>>
+        span(U* arr, asl::sizei size)
+        {
+            static_assert(std::is_same<U, T>::value, "The types are not the same");
+            static_assert(!std::is_convertible<U*, T*>::value || std::is_same<T, U>::value,
+                        "There is an implicit conversion going on");
+        }
 
-		template <typename U, asl::sizei N, class = std::enable_if_t<!std::is_same<U, T>::value>>
-		span(U (&arr)[N])
-		{
-			static_assert(std::is_same<U, T>::value, "The types are not the same");
-			static_assert(!std::is_convertible<U*, T*>::value || std::is_same<T, U>::value,
-						"There is an implicit conversion going on");
-		}
+        template <typename U, asl::sizei N, class = std::enable_if_t<!std::is_same<U, T>::value>>
+        span(U (&arr)[N])
+        {
+            static_assert(std::is_same<U, T>::value, "The types are not the same");
+            static_assert(!std::is_convertible<U*, T*>::value || std::is_same<T, U>::value,
+                        "There is an implicit conversion going on");
+        }
 
-		template <typename U, asl::sizei N, class = std::enable_if_t<!std::is_same<U, T>::value>>
-		span& operator=(U (&arr)[N])
-		{
-			static_assert(std::is_same<U, T>::value, "The types are not the same");
-			static_assert(!std::is_convertible<U*, T*>::value || std::is_same<T, U>::value,
-						"There is an implicit conversion going on");
-		}
+        template <typename U, asl::sizei N, class = std::enable_if_t<!std::is_same<U, T>::value>>
+        span& operator=(U (&arr)[N])
+        {
+            static_assert(std::is_same<U, T>::value, "The types are not the same");
+            static_assert(!std::is_convertible<U*, T*>::value || std::is_same<T, U>::value,
+                        "There is an implicit conversion going on");
+        }
 
-		asl::sizei size() const noexcept
-		{
-			sanity_check();
-			return m_size;
-		}
+        asl::sizei size() const noexcept
+        {
+            sanity_check();
+            return m_size;
+        }
 
-		T* get() const noexcept
-		{
-			sanity_check();
-			return m_ptr;
-		}
+        T* get() const noexcept
+        {
+            sanity_check();
+            return m_ptr;
+        }
 
-		T* begin() const noexcept
-		{
-			sanity_check();
-			return m_ptr;
-		}
+        T* begin() const noexcept
+        {
+            sanity_check();
+            return m_ptr;
+        }
 
-		T* end() const noexcept
-		{
-			sanity_check();
-			return m_ptr + m_size;
-		}
+        T* end() const noexcept
+        {
+            sanity_check();
+            return m_ptr + m_size;
+        }
 
-		T at(asl::sizei index) const noexcept
-		{
-			sanity_check();
-			Expects(index < m_size);
-			return *(m_ptr + index);
-		}
+        T at(asl::sizei index) const noexcept
+        {
+            sanity_check();
+            Expects(index < m_size);
+            return *(m_ptr + index);
+        }
 
-		T operator[](asl::sizei index) const noexcept
-		{
-			sanity_check();
-			return *(m_ptr + index);
-		}
+        T operator[](asl::sizei index) const noexcept
+        {
+            sanity_check();
+            return *(m_ptr + index);
+        }
 
-		operator T() const noexcept 
-		{
-			sanity_check();
-			return m_ptr;
-		}
+        operator T() const noexcept 
+        {
+            sanity_check();
+            return m_ptr;
+        }
 
-	private:
+    private:
 
-		void sanity_check()
-		{
-			Ensures(m_ptr != nullptr
-					&& m_size > 0);
-		}
+        void sanity_check()
+        {
+            Ensures(m_ptr != nullptr
+                    && m_size > 0);
+        }
 
-		T* m_ptr;
-		asl::sizei m_size;
-	};
+        T* m_ptr;
+        asl::sizei m_size;
+    };
 } // namespace gsl
 
 // vim: ft=cpp

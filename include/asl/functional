@@ -7,52 +7,52 @@
 
 namespace asl
 {
-	template <typename Container, typename Func>
-	inline constexpr void transform(Container& c, Func&& f)
-	{
-		std::transform(std::begin(c), std::end(c), std::begin(c), std::forward<Func>(f));
-	}
+    template <typename Container, typename Func>
+    inline constexpr void transform(Container& c, Func&& f)
+    {
+        std::transform(std::begin(c), std::end(c), std::begin(c), std::forward<Func>(f));
+    }
 
-	template <typename Container, typename Func>
-	inline constexpr Container sort(Container& c, Func&& f)
-	{
-		std::sort(std::begin(c), std::end(c), std::begin(c), std::forward<Func>(f));
-	}
+    template <typename Container, typename Func>
+    inline constexpr Container sort(Container& c, Func&& f)
+    {
+        std::sort(std::begin(c), std::end(c), std::begin(c), std::forward<Func>(f));
+    }
 
-	template <typename Container, typename Func>
-	inline constexpr void copy(Container& src, Container& dest)
-	{
-		std::copy(std::begin(src), std::end(src), std::begin(dest));
-		return dest;
-	}
+    template <typename Container, typename Func>
+    inline constexpr void copy(Container& src, Container& dest)
+    {
+        std::copy(std::begin(src), std::end(src), std::begin(dest));
+        return dest;
+    }
 
-	template <typename Container, typename Func>
-	inline constexpr void copy_if(Container& src, Container& dest, Func&& f)
-	{
-		std::copy_if(std::begin(src), std::begin(src), std::begin(dest), std::forward<Func>(f));
-	}
+    template <typename Container, typename Func>
+    inline constexpr void copy_if(Container& src, Container& dest, Func&& f)
+    {
+        std::copy_if(std::begin(src), std::begin(src), std::begin(dest), std::forward<Func>(f));
+    }
 
-	template <asl::sizei Index = 0, typename Func, typename... Ts>
-	inline constexpr std::enable_if_t<Index == sizeof...(Ts), void>
-	for_each_tuple(std::tuple<Ts...>, Func)
-	{
-		
-	}
+    template <asl::sizei Index = 0, typename Func, typename... Ts>
+    inline constexpr std::enable_if_t<Index == sizeof...(Ts), void>
+    for_each_tuple(std::tuple<Ts...>, Func)
+    {
+        
+    }
 
-	template <asl::sizei Index = 0, typename Func, typename... Ts>
-	inline constexpr std::enable_if_t<Index < sizeof...(Ts), void>
-	for_each_tuple(std::tuple<Ts...> t, Func f)
-	{
-		f(std::get<Index>(t));
-		for_each_tuple<Index + 1, Func, Ts...>(t, f);
-	}
+    template <asl::sizei Index = 0, typename Func, typename... Ts>
+    inline constexpr std::enable_if_t<Index < sizeof...(Ts), void>
+    for_each_tuple(std::tuple<Ts...> t, Func f)
+    {
+        f(std::get<Index>(t));
+        for_each_tuple<Index + 1, Func, Ts...>(t, f);
+    }
 
-	// this hack
-	template <typename... Args, typename F>
-	void for_each_arg(F f, Args&&... args)
-	{
-		[](...){}((f(std::forward<Args>(args)), 0)...);
-	}
+    // this hack
+    template <typename... Args, typename F>
+    void for_each_arg(F f, Args&&... args)
+    {
+        [](...){}((f(std::forward<Args>(args)), 0)...);
+    }
 } // namespace asl
 
 // vim: ft=cpp
