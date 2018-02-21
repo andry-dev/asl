@@ -36,7 +36,7 @@ namespace asl
     inline constexpr std::enable_if_t<Index == sizeof...(Ts), void>
     for_each_tuple(std::tuple<Ts...>, Func)
     {
-        
+
     }
 
     template <asl::sizei Index = 0, typename Func, typename... Ts>

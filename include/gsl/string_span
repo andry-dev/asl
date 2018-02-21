@@ -19,12 +19,12 @@ namespace gsl
         { }
 
         basic_string_span(const std::basic_string<CharT>& str)
-            : m_begin(str.begin()), m_end(str.end())
+            : m_begin(str.c_str()), m_end(str.c_str() + str.size())
         { }
 
         constexpr CharT operator[](asl::sizei i) const
         {
-            return (*m_begin + i);
+            return *(m_begin + i);
         }
 
         constexpr asl::sizei size() const
@@ -32,20 +32,77 @@ namespace gsl
             return (m_end - m_begin);
         }
 
-        operator const CharT*() const
+        constexpr const CharT* data() const
         {
             return m_begin;
+        }
+
+        constexpr const CharT* c_str() const
+        {
+            return m_begin;
+        }
+
+        constexpr bool empty() const
+        {
+            return m_begin == m_end;
+        }
+
+        constexpr operator const CharT*() const
+        {
+            return m_begin;
+        }
+
+        constexpr CharT front() const
+        {
+            return *m_begin;
+        }
+
+        constexpr CharT back() const
+        {
+            return *(m_end - 1);
+        }
+
+        constexpr CharT* begin()
+        {
+            return m_begin;
+        }
+
+        constexpr CharT* end()
+        {
+            return m_end;
+        }
+
+        constexpr const CharT* cbegin() const
+        {
+            return m_begin;
+        }
+
+        constexpr const CharT* cend() const
+        {
+            return m_end;
+        }
+
+        constexpr gsl::basic_string_span substr(asl::sizei pos, asl::sizei count)
+        {
+            Expects(count < size(), "The count is less than the size of the string");
+            return gsl::basic_string_span{m_begin + pos, count};
         }
 
         operator std::basic_string<CharT>() const
         {
             return { m_begin, size() };
         }
+
+        friend std::basic_string<CharT> operator+(gsl::basic_string_span<CharT> lhs, const CharT* rhs)
+        {
+            return std::basic_string<CharT>{lhs.c_str()} + std::basic_string<CharT>{rhs};
+        }
     private:
 
         const CharT* m_begin;
         const CharT* m_end;
     };
+
 
     using string_span = basic_string_span<char>;
     using u16string_span = basic_string_span<char16_t>;

@@ -29,10 +29,9 @@ namespace asl
         const T& operator->() const { return value; }
 
 #else // NDEBUG
-        debug_only() {  }
-        debug_only(const T&) {  }
-        explicit debug_only(const T) { }
-        debug_only(const debug_only&) {  }
+        debug_only() = default;
+        debug_only(const T&) = default;
+        debug_only(const debug_only&) = default;
 
         ~debug_only() = default;
 
