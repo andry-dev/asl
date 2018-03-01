@@ -4,6 +4,8 @@
 #include <tuple>
 
 #include "asl/types"
+#incldue "gsl/string_span"
+#include "asl/string_view"
 
 namespace asl
 {
@@ -34,14 +36,12 @@ namespace asl
 
     template <asl::sizei Index = 0, typename Func, typename... Ts>
     inline constexpr std::enable_if_t<Index == sizeof...(Ts), void>
-    for_each_tuple(std::tuple<Ts...>, Func)
-    {
-
-    }
+    for_each_tuple(std::tuple<Ts...>, Func) noexcept
+    { }
 
     template <asl::sizei Index = 0, typename Func, typename... Ts>
     inline constexpr std::enable_if_t<Index < sizeof...(Ts), void>
-    for_each_tuple(std::tuple<Ts...> t, Func f)
+    for_each_tuple(std::tuple<Ts...> t, Func f) noexcept
     {
         f(std::get<Index>(t));
         for_each_tuple<Index + 1, Func, Ts...>(t, f);
@@ -49,10 +49,23 @@ namespace asl
 
     // this hack
     template <typename... Args, typename F>
-    void for_each_arg(F f, Args&&... args)
+    void for_each_arg(F f, Args&&... args) noexcept
     {
         [](...){}((f(std::forward<Args>(args)), 0)...);
     }
+
+    template <typename CharT>
+    inline basic_string<CharT> to_string(basic_string_view<CharT> str)
+    {
+        return { str.data(), str.size() };
+    }
+
+    template <typename CharT>
+    inline basic_string<CharT> to_string(basic_string_span<CharT> str)
+    {
+        return { str.begin(), str.size() };
+    }
+
 } // namespace asl
 
 // vim: ft=cpp

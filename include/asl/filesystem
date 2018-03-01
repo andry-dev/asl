@@ -2,12 +2,17 @@
 
 #include "asl/detect_features"
 
-#if ASL_CXX17_FILESYSTEM && !defined(ASL_CXX17_FILESYSTEM_EXPERIMENTAL)
-    #include <filesystem>
-    namespace std_fs = std::experimental::filesystem;
+#if ASL_CXX17_FILESYSTEM
+    #ifdef ASL_CXX17_FILESYSTEM_EXPERIMENTAL
+        #include <experimental/filesystem>
+        namespace std_fs = std::experimental::filesystem;
+    #else
+        #include <filesystem>
+        namespace std_fs = std::filesystem;
 #else
     #ifdef ASL_WIN32
         #define WIN32_LEAN_AND_MEAN
+        #define NOMINMAX
         #include <windows.h>
     #elif defined(ASL_POSIX)
         #include <sys/types.h>
@@ -36,7 +41,7 @@ namespace fs
 
     namespace details
     {
-        #if !ASL_CXX17_FILESYSTEM || defined(ASL_CXX17_FILESYSTEM_EXPERIMENTAL)
+        #if !ASL_CXX17_FILESYSTEM
         inline bool fileExists(const char* path)
         {
             #if defined(ASL_WIN32)
@@ -66,13 +71,13 @@ namespace fs
     }
 
 
-    #if ASL_CXX17_STRING_VIEW && !defined(ASL_CXX17_STRING_VIEW_EXPERIMENTAL)
-    inline bool fileExists(const std_sv::string_view& file)
+    #if ASL_CXX17_STRING_VIEW
+    inline bool fileExists(std_sv::string_view file)
     #else
     inline bool fileExists(const char* file)
     #endif
     {
-        #if ASL_CXX17_FILESYSTEM && !defined(ASL_CXX17_FILESYSTEM_EXPERIMENTAL)
+        #if ASL_CXX17_FILESYSTEM
             return std_fs::exists(file);
         #else
             return details::fileExists(file);

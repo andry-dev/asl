@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+
 #include "asl/types"
 
 namespace gsl
@@ -19,10 +20,10 @@ namespace gsl
         { }
 
         basic_string_span(const std::basic_string<CharT>& str)
-            : m_begin(str.c_str()), m_end(str.c_str() + str.size())
+            : m_begin(str.begin()), m_end(str.end())
         { }
 
-        constexpr CharT operator[](asl::sizei i) const
+        constexpr CharT& operator[](asl::sizei i)
         {
             return *(m_begin + i);
         }
@@ -32,7 +33,7 @@ namespace gsl
             return (m_end - m_begin);
         }
 
-        constexpr const CharT* data() const
+        constexpr CharT* data()
         {
             return m_begin;
         }
@@ -47,17 +48,12 @@ namespace gsl
             return m_begin == m_end;
         }
 
-        constexpr operator const CharT*() const
-        {
-            return m_begin;
-        }
-
-        constexpr CharT front() const
+        constexpr CharT& front()
         {
             return *m_begin;
         }
 
-        constexpr CharT back() const
+        constexpr CharT& back()
         {
             return *(m_end - 1);
         }
@@ -82,7 +78,7 @@ namespace gsl
             return m_end;
         }
 
-        constexpr gsl::basic_string_span substr(asl::sizei pos, asl::sizei count)
+        constexpr gsl::basic_string_span<CharT> substr(asl::sizei pos, asl::sizei count)
         {
             Expects(count < size(), "The count is less than the size of the string");
             return gsl::basic_string_span{m_begin + pos, count};
@@ -93,16 +89,20 @@ namespace gsl
             return { m_begin, size() };
         }
 
-        friend std::basic_string<CharT> operator+(gsl::basic_string_span<CharT> lhs, const CharT* rhs)
+        std::basic_string<CharT> operator+(const CharT* rhs)
         {
-            return std::basic_string<CharT>{lhs.c_str()} + std::basic_string<CharT>{rhs};
+            return std::basic_string<CharT>{c_str()} + std::basic_string<CharT>{rhs};
+        }
+
+        friend std::basic_string<CharT> operator+(const CharT* lhs, gsl::basic_string_span<CharT> rhs)
+        {
+            return std::basic_string<CharT>{lhs} + std::basic_string<CharT>{rhs.c_str()};
         }
     private:
 
         const CharT* m_begin;
         const CharT* m_end;
     };
-
 
     using string_span = basic_string_span<char>;
     using u16string_span = basic_string_span<char16_t>;
@@ -135,6 +135,12 @@ namespace gsl
             return { str, size };
         }
     }
-}
+
+    template <typename CharT>
+    basic_string<CharT> to_string(basic_string_span<CharT> str)
+    {
+        return { str.begin(), str.size() };
+    }
+} // namespace gsl
 
 // vim: ft=cpp

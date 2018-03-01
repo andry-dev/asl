@@ -1,0 +1,135 @@
+#pragma once
+
+#include <string>
+
+#include "asl/types"
+#include "gsl/assert"
+
+namespace asl
+{
+    template <typename CharT>
+    class basic_string_view
+    {
+    public:
+        using value_type = CharT;
+        using pointer = CharT*;
+        using const_pointer = const CharT*;
+        using reference = CharT&;
+        using const_iterator = const CharT* const;
+        using iterator = const_iterator;
+        using size_type = asl::sizei;
+
+        template <asl::sizei N>
+        constexpr basic_string_view(const CharT (&literal)[N])
+            : m_begin(literal), m_end(literal + N)
+        { }
+
+        constexpr basic_string_view(pointer ptr, asl::sizei size)
+            : m_begin(ptr), m_end(ptr + size)
+        { }
+
+        basic_string_view(const std::basic_string<CharT>& str)
+            : m_begin(str.begin()), m_end(str.end())
+        { }
+
+        constexpr basic_string_view(const gsl::basic_string_span<CharT>& str)
+            : m_begin(str.begin()), m_end(str.end())
+        { }
+
+        constexpr iterator begin() const noexcept
+        {
+            return m_begin;
+        }
+
+        constexpr const_iterator cbegin() const noexcept
+        {
+            return m_begin;
+        }
+
+        constexpr iterator end() const noexcept
+        {
+            return m_end;
+        }
+
+        constexpr const_iterator cend() const noexcept
+        {
+            return m_end;
+        }
+
+        constexpr value_type operator[](size_type index) const noexcept
+        {
+            return *(m_begin + index);
+        }
+
+        constexpr value_type at(size_type index) const noexcept
+        {
+            Expects(index < size(), "[asl/string_view] Index out of bounds");
+            return *(m_begin + index);
+        }
+
+        constexpr value_type front() const noexcept
+        {
+            return *m_begin;
+        }
+
+        constexpr value_type back() const noexcept
+        {
+            return *(m_end - 1);
+        }
+
+        constexpr pointer data() const noexcept
+        {
+            return m_begin;
+        }
+
+        constexpr size_type size() const noexcept
+        {
+            return m_end - m_begin;
+        }
+
+        constexpr bool empty() const noexcept
+        {
+            return m_begin == m_end;
+        }
+
+        constexpr basic_string_view<CharT> substr(size_type pos, size_type count) const noexcept
+        {
+            return { m_begin + pos, count };
+        }
+
+    private:
+        const CharT* m_begin;
+        const CharT* m_end;
+    };
+
+    using string_view = basic_string_view<char>;
+    using u16string_view = basic_string_view<char16_t>;
+    using u32string_view = basic_string_view<char32_t>;
+    using wstring_view = basic_string_view<wchar_t>;
+
+    namespace literals
+    {
+        string_view operator""sv(const char* str, asl::sizei len) noexcept
+        {
+            return { str, len };
+        }
+
+        u16string_view operator""sv(const char16_t* str, asl::sizei len) noexcept
+        {
+            return { str, len };
+        }
+
+        u32string_view operator""sv(const char32_t* str, asl::sizei len) noexcept
+        {
+            return { str, len };
+        }
+
+        wstring_view operator""sv(const wchar_t* str, asl::sizei len) noexcept
+        {
+            return { str, len };
+        }
+    }
+
+}
+
+// vim: ft=cpp

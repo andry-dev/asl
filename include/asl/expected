@@ -1,0 +1,115 @@
+#pragma once
+
+#include "asl/meta"
+
+namespace asl
+{
+    template <typename E>
+    struct unexpected_type
+    {
+            E error;
+    };
+
+    template <typename Error>
+    constexpr unexpected_type<Error> make_unexpected(Error&& e)
+    {
+        return { std::forward<Error>(e) };
+    }
+
+    template <typename T, typename E>
+    class [[nodiscard]] expected
+    {
+    public:
+        template <typename U,
+                  enable_fwd_t<U, T> = false>
+        constexpr expected(U&& success)
+            : m_is_error(false)
+            , m_stored_value(std::forward<T>(success))
+        { }
+
+        template <typename U,
+                  enable_fwd_t<U, E> = false>
+        constexpr expected(U&& error)
+            : m_is_error(true)
+            , m_stored_value(std::forward<E>(error))
+        { }
+
+        template <typename U,
+                  enable_fwd_t<U, unexpected_type<std::decay_t<E>>> = false>
+        constexpr expected(U&& error_type)
+            : m_is_error(true)
+            , m_stored_value(std::forward<E>(error_type.error))
+        { }
+
+        ~expected() = default;
+
+        constexpr operator bool() const
+        {
+            return !m_is_error;
+        }
+
+        constexpr bool has_value() const
+        {
+            return !m_is_error;
+        }
+
+        constexpr bool has_error() const
+        {
+            return m_is_error;
+        }
+
+        constexpr T value() const
+        {
+            return m_stored_value.t;
+        }
+
+        constexpr E error() const
+        {
+            return m_stored_value.e;
+        }
+
+        template <typename U>
+        constexpr bool operator==(U&& e) const
+        {
+            static_assert(std::is_same<std::decay_t<U>, std::decay_t<E>>::value);
+            return m_stored_value.e == e;
+        }
+
+        template <typename U>
+        constexpr bool operator!=(U&& e) const
+        {
+            static_assert(std::is_same<std::decay_t<U>, std::decay_t<E>>::value);
+            return m_stored_value.e != e;
+        }
+
+        constexpr T operator*() const
+        {
+            return m_stored_value.t;
+        }
+
+    private:
+        union generated_union
+        {
+            template <typename U,
+                     enable_fwd_t<U, T> = false>
+            constexpr generated_union(U&& t)
+                : t(std::forward<T>(t))
+            { }
+
+            template <typename U,
+                  enable_fwd_t<U, E> = false>
+            constexpr generated_union(U&& e)
+                : e(std::forward<E>(e))
+            { }
+
+            const T t;
+            const E e;
+        };
+
+        const generated_union m_stored_value;
+
+        const bool m_is_error;
+    };
+} // namespace asl
+
+// vim: ft=cpp

@@ -30,8 +30,8 @@ namespace asl
 
 #else // NDEBUG
         debug_only() = default;
-        debug_only(const T&) = default;
-        debug_only(const debug_only&) = default;
+        debug_only(const T&) { }
+        debug_only(const debug_only&) { }
 
         ~debug_only() = default;
 
