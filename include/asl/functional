@@ -4,11 +4,15 @@
 #include <tuple>
 
 #include "asl/types"
-#incldue "gsl/string_span"
+#include "gsl/string_span"
 #include "asl/string_view"
 
 namespace asl
 {
+    template <typename CharT>
+    class basic_string_view;
+
+
     template <typename Container, typename Func>
     inline constexpr void transform(Container& c, Func&& f)
     {
@@ -55,16 +59,30 @@ namespace asl
     }
 
     template <typename CharT>
-    inline basic_string<CharT> to_string(basic_string_view<CharT> str)
+    inline std::basic_string<CharT> to_string(asl::basic_string_view<CharT> str)
     {
         return { str.data(), str.size() };
     }
 
     template <typename CharT>
-    inline basic_string<CharT> to_string(basic_string_span<CharT> str)
+    inline std::basic_string<CharT> to_string(gsl::basic_string_span<CharT> str)
     {
         return { str.begin(), str.size() };
     }
+
+    template <typename CharT>
+    constexpr asl::mut_num strlen(const CharT* str) noexcept
+    {
+        asl::mut_num count = 0;
+        for (asl::mut_num i = 0; str[i] != '\0'; ++i)
+        {
+            ++count;
+        }
+
+        return count;
+    }
+
+
 
 } // namespace asl
 

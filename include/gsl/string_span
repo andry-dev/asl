@@ -20,7 +20,7 @@ namespace gsl
         { }
 
         basic_string_span(const std::basic_string<CharT>& str)
-            : m_begin(str.begin()), m_end(str.end())
+            : m_begin(str.c_str()), m_end(str.c_str() + str.size())
         { }
 
         constexpr CharT& operator[](asl::sizei i)
@@ -81,12 +81,12 @@ namespace gsl
         constexpr gsl::basic_string_span<CharT> substr(asl::sizei pos, asl::sizei count)
         {
             Expects(count < size(), "The count is less than the size of the string");
-            return gsl::basic_string_span{m_begin + pos, count};
+            return gsl::basic_string_span<CharT>{m_begin + pos, count};
         }
 
         operator std::basic_string<CharT>() const
         {
-            return { m_begin, size() };
+            return std::basic_string<CharT>{ m_begin, size() };
         }
 
         std::basic_string<CharT> operator+(const CharT* rhs)
@@ -136,11 +136,6 @@ namespace gsl
         }
     }
 
-    template <typename CharT>
-    basic_string<CharT> to_string(basic_string_span<CharT> str)
-    {
-        return { str.begin(), str.size() };
-    }
 } // namespace gsl
 
 // vim: ft=cpp

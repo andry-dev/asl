@@ -4,6 +4,7 @@
 
 #include "asl/types"
 #include "gsl/assert"
+#include "asl/functional"
 
 namespace asl
 {
@@ -12,7 +13,7 @@ namespace asl
     {
     public:
         using value_type = CharT;
-        using pointer = CharT*;
+        using pointer = const CharT*;
         using const_pointer = const CharT*;
         using reference = CharT&;
         using const_iterator = const CharT* const;
@@ -24,7 +25,11 @@ namespace asl
             : m_begin(literal), m_end(literal + N)
         { }
 
-        constexpr basic_string_view(pointer ptr, asl::sizei size)
+        constexpr basic_string_view(const_pointer ptr)
+            : m_begin(ptr), m_end(ptr + asl::strlen(ptr))
+        { }
+
+        constexpr basic_string_view(const_pointer ptr, asl::sizei size)
             : m_begin(ptr), m_end(ptr + size)
         { }
 
@@ -97,9 +102,59 @@ namespace asl
             return { m_begin + pos, count };
         }
 
+        constexpr bool operator==(basic_string_view<CharT> rhs) const noexcept
+        {
+            if (this->size() != rhs.size())
+            {
+                return false;
+            }
+
+            auto size = this->size();
+
+            return strings_equal(this->begin(), rhs.begin(), size);
+        }
+        
+        constexpr bool operator!=(basic_string_view<CharT> rhs) const noexcept
+        {
+            return !(*this == rhs);
+        }
+
+        constexpr bool operator<(basic_string_view<CharT> rhs) const noexcept
+        {
+            return this->size() < rhs.size();
+        }
+
+        constexpr bool operator<=(basic_string_view<CharT> rhs) const noexcept
+        {
+            return !(rhs < *this);
+        }
+
+        constexpr bool operator>(basic_string_view<CharT> rhs) const noexcept
+        {
+            return rhs < *this;
+        }
+
+        constexpr bool operator>=(basic_string_view<CharT> rhs) const noexcept
+        {
+            return !(*this < rhs);
+        }
+
     private:
         const CharT* m_begin;
         const CharT* m_end;
+
+        constexpr bool strings_equal(const_pointer str1, const_pointer str2, asl::sizei size) const noexcept
+        {
+            for (asl::mut_sizei i = 0; i < size; ++i)
+            {
+                if (str1[i] != str2[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     };
 
     using string_view = basic_string_view<char>;
@@ -109,25 +164,27 @@ namespace asl
 
     namespace literals
     {
-        string_view operator""sv(const char* str, asl::sizei len) noexcept
+        constexpr asl::string_view operator""_sv(const char* str, asl::sizei len) noexcept
         {
-            return { str, len };
+            return asl::string_view{ str, len };
         }
 
-        u16string_view operator""sv(const char16_t* str, asl::sizei len) noexcept
+        constexpr asl::u16string_view operator""_sv(const char16_t* str, asl::sizei len) noexcept
         {
-            return { str, len };
+            return asl::u16string_view{ str, len };
         }
 
-        u32string_view operator""sv(const char32_t* str, asl::sizei len) noexcept
+        constexpr asl::u32string_view operator""_sv(const char32_t* str, asl::sizei len) noexcept
         {
-            return { str, len };
+            return asl::u32string_view{ str, len };
         }
 
-        wstring_view operator""sv(const wchar_t* str, asl::sizei len) noexcept
+        constexpr asl::wstring_view operator""_sv(const wchar_t* str, asl::sizei len) noexcept
         {
-            return { str, len };
+            return asl::wstring_view{ str, len };
         }
+
+
     }
 
 }

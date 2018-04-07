@@ -1,37 +1,18 @@
 #pragma once
 
 #include "asl/detect_features"
+#include "asl/string_view"
 
-#if ASL_CXX17_FILESYSTEM
-    #ifdef ASL_CXX17_FILESYSTEM_EXPERIMENTAL
-        #include <experimental/filesystem>
-        namespace std_fs = std::experimental::filesystem;
-    #else
-        #include <filesystem>
-        namespace std_fs = std::filesystem;
-#else
-    #ifdef ASL_WIN32
-        #define WIN32_LEAN_AND_MEAN
-        #define NOMINMAX
-        #include <windows.h>
-    #elif defined(ASL_POSIX)
-        #include <sys/types.h>
-        #include <sys/stat.h>
-        #include <unistd.h>
-    #elif defined(ASL_UNKNOWN_PLATFORM)
-        #error "[asl/filesystem] Your platform is unsupported :("
-    #endif
-#endif
-
-
-#if ASL_CXX17_STRING_VIEW 
-    #ifdef ASL_CXX17_STRING_VIEW_EXPERIMENTAL
-        #include <experimental/string_view>
-        namespace std_sv = std::experimental;
-    #else
-        #include <string_view>
-        namespace std_sv = std;
-    #endif
+#ifdef ASL_WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #define NOMINMAX
+    #include <windows.h>
+#elif defined(ASL_POSIX)
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+#elif defined(ASL_UNKNOWN_PLATFORM)
+    #error "[asl/filesystem] Your platform is unsupported :("
 #endif
 
 namespace asl
@@ -41,7 +22,6 @@ namespace fs
 
     namespace details
     {
-        #if !ASL_CXX17_FILESYSTEM
         inline bool fileExists(const char* path)
         {
             #if defined(ASL_WIN32)
@@ -65,23 +45,14 @@ namespace fs
                     return false;
                 }
 
-            #endif
+            #endif // defined(ASL_WIN32)
         }
-        #endif // !ASL_CXX17_FILESYSTEM
     }
 
 
-    #if ASL_CXX17_STRING_VIEW
-    inline bool fileExists(std_sv::string_view file)
-    #else
-    inline bool fileExists(const char* file)
-    #endif
+    inline bool fileExists(asl::string_view file)
     {
-        #if ASL_CXX17_FILESYSTEM
-            return std_fs::exists(file);
-        #else
-            return details::fileExists(file);
-        #endif
+        return details::fileExists(file.data());
     }
 
 } // namespace fs

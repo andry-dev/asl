@@ -82,7 +82,7 @@ namespace asl
             return *(m_begin + (i % N));
         }
 
-        constexpr std::size_t size() const
+        constexpr asl::sizei size() const
         {
             return N;
         }
