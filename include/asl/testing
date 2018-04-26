@@ -1,0 +1,13 @@
+#pragma once
+
+#include <exception>
+#include <cstdio>
+
+#define ASL_TEST_ASSERT(cond) \
+    if (!(cond)) \
+    { \
+        std::printf("Assert failed at line %d : %s \n", __LINE__, __FILE__); \
+        std::terminate(); \
+    }
+
+// vim: ft=cpp

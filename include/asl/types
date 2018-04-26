@@ -54,6 +54,8 @@ namespace asl
             Constraint::check(val);
         }
 
+        ~constrained_type() = default;
+
         constexpr constrained_type(const constrained_type& oth) noexcept
             : m_val(oth.m_val)
         {
@@ -84,15 +86,10 @@ namespace asl
             return *this;
         }
 
-        constexpr T get() const noexcept
+        constexpr T& value() noexcept
         {
+            Constraint::check(m_val);
             return m_val;
-        }
-
-        constexpr void set(T val) noexcept
-        {
-            Constraint::check(val);
-           m_val = val; 
         }
     private:
         T m_val;
@@ -132,52 +129,9 @@ namespace asl
     };
 
     template <typename T, typename Phantom>
-    class strong_typedef
+    struct strong_typedef
     {
-    public:
-
-        explicit constexpr strong_typedef(T val) noexcept
-            : m_val(val)
-        {
-        }
-
-        constexpr strong_typedef(const strong_typedef& oth) noexcept
-        {
-            m_val = oth.m_val;
-        }
-
-        constexpr strong_typedef& operator=(strong_typedef oth) noexcept
-        {
-            std::swap(m_val, oth.m_val);
-            return *this;
-        }
-
-        constexpr strong_typedef(strong_typedef&& oth) noexcept
-        {
-            m_val = oth.m_val;
-        }
-
-        constexpr strong_typedef& operator=(strong_typedef&& oth) noexcept
-        {
-            if (this != &oth)
-            {
-                m_val = oth.m_val;
-            }
-
-            return *this;
-        }
-
-        constexpr T get() const noexcept
-        {
-            return m_val;
-        }
-
-        constexpr void set(T val) noexcept
-        {
-            m_val = val;
-        }
-    private:
-        T m_val;
+        T value;
     };
 
 } // namespace asl

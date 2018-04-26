@@ -1,9 +1,15 @@
 #pragma once
 
+#include "asl/detect_features"
+
 namespace asl
 {
     template <typename T>
-    class [[maybe_unused]] debug_only
+    class
+#ifdef ASL_CXX17_SUPPORTED
+    [[maybe_unused]]
+#endif
+    debug_only
     {
     public:
 #ifndef NDEBUG
