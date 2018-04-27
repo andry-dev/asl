@@ -33,9 +33,13 @@ namespace asl
             : m_begin(ptr), m_end(ptr + size)
         { }
 
-        basic_string_view(const std::basic_string<CharT>& str)
-            : m_begin(str.begin()), m_end(str.end())
-        { }
+        template <typename STDString>
+        basic_string_view(const STDString& str)
+            : m_begin(str.data()), m_end(str.data() + str.size())
+        {
+            static_assert(std::is_same_v<typename STDString::value_type, CharT>,
+                          "Incompatible std::string value_type");
+        }
 
         constexpr basic_string_view(const gsl::basic_string_span<CharT>& str)
             : m_begin(str.begin()), m_end(str.end())
