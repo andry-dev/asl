@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "asl/meta"
 
 namespace asl
@@ -21,21 +23,21 @@ namespace asl
     {
     public:
         template <typename U,
-                  enable_fwd_t<U, T> = false>
+                  enable_fwd_t<U, T> = 0>
         constexpr expected(U&& success)
             : m_is_error(false)
             , m_stored_value(std::forward<T>(success))
         { }
 
         template <typename U,
-                  enable_fwd_t<U, E> = false>
+                  enable_fwd_t<U, E> = 0>
         constexpr expected(U&& error)
             : m_is_error(true)
             , m_stored_value(std::forward<E>(error))
         { }
 
         template <typename U,
-                  enable_fwd_t<U, unexpected_type<std::decay_t<E>>> = false>
+                  enable_fwd_t<U, unexpected_type<std::decay_t<E>>> = 0>
         constexpr expected(U&& error_type)
             : m_is_error(true)
             , m_stored_value(std::forward<E>(error_type.error))
@@ -91,13 +93,13 @@ namespace asl
         union generated_union
         {
             template <typename U,
-                     enable_fwd_t<U, T> = false>
+                     enable_fwd_t<U, T> = 0>
             constexpr generated_union(U&& t)
                 : t(std::forward<T>(t))
             { }
 
             template <typename U,
-                  enable_fwd_t<U, E> = false>
+                  enable_fwd_t<U, E> = 0>
             constexpr generated_union(U&& e)
                 : e(std::forward<E>(e))
             { }
