@@ -10,4 +10,6 @@
         std::terminate(); \
     }
 
+#define ASL_CRASH_FAST() { *(int*)0 = 0; }
+
 // vim: ft=cpp

@@ -104,11 +104,26 @@ namespace asl
                 : e(std::forward<E>(e))
             { }
 
-            const T t;
-            const E e;
+
+            constexpr generated_union()
+            {
+            }
+            constexpr generated_union(generated_union&&) = default;
+
+            constexpr generated_union& operator=(const generated_union&) = default;
+            constexpr generated_union& operator=(generated_union&&) = default;
+
+            ~generated_union()
+            {
+                e.~E();
+                t.~T();
+            }
+
+            T t;
+            E e;
         };
 
-        const generated_union m_stored_value;
+        generated_union m_stored_value;
 
         const bool m_is_error;
     };
