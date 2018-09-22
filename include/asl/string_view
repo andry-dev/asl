@@ -37,7 +37,7 @@ namespace asl
         basic_string_view(const STDString& str)
             : m_begin(str.data()), m_end(str.data() + str.size())
         {
-            static_assert(std::is_same_v<typename STDString::value_type, CharT>,
+            static_assert(std::is_same<typename STDString::value_type, CharT>::value,
                           "Incompatible std::string value_type");
         }
 

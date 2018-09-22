@@ -2,6 +2,11 @@
 
 #include "asl/types"
 #include "asl/meta"
+#include "asl/expected"
+
+#include <array>
+
+#include <cstdio>
 
 namespace asl
 {
@@ -61,74 +66,98 @@ namespace asl
         using iterator = T*;
 
         constexpr static_ring()
-            : m_begin(m_data), m_end(m_data + N)
+            : m_head(0), m_tail(0)
         {
-
-        }
-
-        constexpr static_ring(std::initializer_list<T> lst)
-            : m_data(lst)
-        {
-            iterator it = m_begin;
-
-            for (const auto& i : lst)
+            for (auto& x : m_data)
             {
-                new(it++) T(i);
+                new (&x) T{};
             }
         }
 
         constexpr const T& operator[](const asl::sizei i) const
         {
-            return *(m_begin + (i % N));
+            return (m_data[m_tail + i]);
         }
 
-        constexpr asl::sizei size() const
+        constexpr asl::i32 size() const
+        {
+            return m_head - m_tail;
+        }
+
+        constexpr asl::i32 capacity() const
         {
             return N;
         }
 
-        constexpr iterator begin() const
+        constexpr iterator begin()
         {
-            return m_begin;
+            return &m_data[m_tail];
         }
 
         constexpr const_iterator cbegin() const
         {
-            return m_begin;
+            return &m_data[m_tail];
         }
 
-        constexpr iterator end() const
+        constexpr iterator end()
         {
-            return m_end;
+            return (&m_data[m_head]) + 1;
         }
 
         constexpr const_iterator cend() const
         {
-            return m_end;
+            return (&m_data[m_head]) + 1;
+        }
+
+        constexpr bool full()
+        {
+            return m_head == (m_tail - 1);
+        }
+
+        constexpr bool empty()
+        {
+            return m_head == m_tail;
         }
 
         template <typename Elem, typename = asl::enable_fwd_t<T, Elem>>
-        void push(Elem&& e)
+        constexpr void push(Elem&& e)
         {
-            *(m_begin + (m_curr % N)) = std::forward<Elem>(e);
-            ++m_curr;
+            if (full())
+            {
+                m_tail = (m_tail + 1) % N;
+            }
+
+            m_data[m_head] = std::forward<Elem>(e);
+
+            m_head = (m_head + 1) % N;
         }
 
-        T& front()
+        constexpr T& read()
         {
-            return *(m_begin + (toRing(m_curr - 1)));
+            if (empty())
+            {
+                return m_data[m_tail];
+            }
+
+            auto& ret = m_data[m_tail];
+            m_tail = (m_tail + 1) % N;
+            return ret;
+        }
+
+        constexpr T& back()
+        {
+            return m_data[m_tail];
+        }
+
+        constexpr T& front()
+        {
+            return m_data[(m_head - 1) % N];
         }
 
     private:
         T m_data[N];
-        T* m_begin;
-        T* m_end;
-        std::size_t m_curr = 0;
-
-        std::size_t toRing(std::size_t num)
-        {
-            return num % N;
-        }
+        asl::mut_i32 m_head;
+        asl::mut_i32 m_tail;
     };
 }
 
