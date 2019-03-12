@@ -15,7 +15,7 @@ namespace gsl
             : m_begin(literal), m_end(literal + N)
         { }
 
-        constexpr basic_string_span(const CharT* ptr, asl::sizei size)
+        constexpr basic_string_span(const CharT* ptr, const asl::sizei size)
             : m_begin(ptr), m_end(ptr + size)
         { }
 
@@ -23,12 +23,12 @@ namespace gsl
             : m_begin(str.c_str()), m_end(str.c_str() + str.size())
         { }
 
-        constexpr CharT& operator[](asl::sizei i)
+        constexpr CharT& operator[](const asl::sizei i)
         {
             return *(m_begin + i);
         }
 
-        constexpr asl::sizei size() const
+        constexpr const asl::sizei size() const
         {
             return (m_end - m_begin);
         }
@@ -78,7 +78,7 @@ namespace gsl
             return m_end;
         }
 
-        constexpr gsl::basic_string_span<CharT> substr(asl::sizei pos, asl::sizei count)
+        constexpr gsl::basic_string_span<CharT> substr(const asl::sizei pos, const asl::sizei count)
         {
             Expects(count < size(), "The count is less than the size of the string");
             return gsl::basic_string_span<CharT>{m_begin + pos, count};
@@ -112,25 +112,25 @@ namespace gsl
     namespace literals
     {
         inline constexpr string_span
-        operator""_ss(const char* str, asl::sizei size) noexcept
+        operator""_ss(const char* str, const asl::sizei size) noexcept
         {
             return { str, size };
         }
 
         inline constexpr u16string_span
-        operator""_ss(const char16_t* str, asl::sizei size) noexcept
+        operator""_ss(const char16_t* str, const asl::sizei size) noexcept
         {
             return { str, size };
         }
 
         inline constexpr u32string_span
-        operator""_ss(const char32_t* str, asl::sizei size) noexcept
+        operator""_ss(const char32_t* str, const asl::sizei size) noexcept
         {
             return { str, size };
         }
 
         inline constexpr wstring_span
-        operator""_ss(const wchar_t* str, asl::sizei size) noexcept
+        operator""_ss(const wchar_t* str, const asl::sizei size) noexcept
         {
             return { str, size };
         }

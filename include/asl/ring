@@ -28,7 +28,7 @@ namespace asl
             return *(m_begin + (i % size()));
         }
 
-        constexpr std::size_t size() const
+        constexpr asl::sizei size() const
         {
             return m_end - m_begin;
         }
@@ -58,7 +58,7 @@ namespace asl
         T* m_end;
     };
 
-    template <typename T, asl::sizei N>
+    template <typename T, const asl::sizei N>
     class static_ring
     {
     public:
@@ -156,8 +156,8 @@ namespace asl
 
     private:
         T m_data[N];
-        asl::mut_i32 m_head;
-        asl::mut_i32 m_tail;
+        asl::i32 m_head;
+        asl::i32 m_tail;
     };
 }
 
