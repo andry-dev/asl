@@ -154,6 +154,12 @@ namespace asl
             return m_data[(m_head - 1) % N];
         }
 
+        constexpr void reset()
+        {
+            m_head = 0;
+            m_tail = 0;
+        }
+
     private:
         T m_data[N];
         asl::i32 m_head;
