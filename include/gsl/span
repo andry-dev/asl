@@ -7,19 +7,27 @@
 
 namespace gsl
 {
+    struct null_span { };
+
+
     template <typename T>
     class span
     {
     public:
         using value_type = T;
 
-        constexpr span() noexcept
+        constexpr span(null_span)
             : m_ptr(nullptr)
             , m_size(0)
+            , m_sanityCheck(false)
         {
-            // This will default construct with null.
-            // help me
         }
+
+        constexpr span()
+            : m_ptr(nullptr)
+            , m_size(0)
+            , m_sanityCheck(false)
+        { }
 
         template <typename Container>
         constexpr span(Container& container) noexcept
@@ -195,11 +203,15 @@ namespace gsl
 
         constexpr void sanity_check() const noexcept 
         {
-            Ensures(m_ptr != nullptr && m_size > 0, "[gsl/span] Container should point to something!");
+            if (m_sanityCheck)
+            {
+                Ensures(m_ptr != nullptr && m_size > 0, "[gsl/span] Container should point to something!");
+            }
         }
 
         T* m_ptr;
         asl::sizei m_size;
+        bool m_sanityCheck{true};
     };
 
     template <typename Container>

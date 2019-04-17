@@ -101,12 +101,12 @@ namespace asl
 
         constexpr iterator end()
         {
-            return (&m_data[m_head]) + 1;
+            return (&m_data[m_head]);
         }
 
         constexpr const_iterator cend() const
         {
-            return (&m_data[m_head]) + 1;
+            return (&m_data[m_head]);
         }
 
         constexpr bool full()
