@@ -105,9 +105,7 @@ namespace asl
             { }
 
 
-            constexpr generated_union()
-            {
-            }
+            constexpr generated_union() = default;
             constexpr generated_union(generated_union&&) = default;
 
             constexpr generated_union& operator=(const generated_union&) = default;
