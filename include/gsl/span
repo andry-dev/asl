@@ -4,6 +4,7 @@
 #include "asl/types"
 #include <type_traits>
 #include <utility>
+#include "asl/meta"
 
 namespace gsl
 {
@@ -29,7 +30,7 @@ namespace gsl
             , m_sanityCheck(false)
         { }
 
-        template <typename Container>
+        template <typename Container, std::enable_if_t<!std::is_same_v<Container, span>>>
         constexpr span(Container& container) noexcept
             : m_ptr(container.data())
             , m_size(container.size())
@@ -37,7 +38,7 @@ namespace gsl
             sanity_check();
         }
 
-        template <typename Container>
+        template <typename Container, std::enable_if_t<!std::is_same_v<Container, span>>>
         constexpr span(const Container& container) noexcept
             : m_ptr(container.data())
             , m_size(container.size())
@@ -67,8 +68,21 @@ namespace gsl
             sanity_check();
         }
 
-        constexpr span(const span& oth) noexcept = default;
-        constexpr span& operator=(const span& rhs) noexcept = default;
+        constexpr span(const span& oth) noexcept
+            : m_ptr(oth.m_ptr)
+            , m_size(oth.m_size)
+            , m_sanityCheck(oth.m_sanityCheck)
+        { }
+
+        constexpr span& operator=(const span& oth) noexcept
+        {
+            span tmp(oth);
+            std::swap(*this, oth);
+
+            sanity_check();
+
+            return *this;
+        }
 
         constexpr span(span&& oth) noexcept
             : m_ptr(std::exchange(oth.m_ptr, nullptr))
@@ -197,6 +211,22 @@ namespace gsl
             Expects(index < m_size, "[gsl/span] Index out of bounds");
             sanity_check();
             return *(m_ptr + index);
+        }
+
+        constexpr T* data() const noexcept
+        {
+            return m_ptr;
+        }
+
+        constexpr span subspan(asl::sizei start, asl::sizei end = asl::sizei(-1)) const noexcept
+        {
+            if (end == asl::sizei(-1))
+            {
+                end = m_size;
+            }
+
+            Ensures(start >= 0 && start < m_size && end <= m_size, "[gsl/span] Invalid subspan range!");
+            return span{ m_ptr + start, end - start };
         }
 
     private:

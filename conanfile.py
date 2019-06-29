@@ -6,28 +6,15 @@ class TewiConan(ConanFile):
     license = "MIT"
     url = "https://github.com/andry-dev/asl.git"
     description = "An easy to use, extendable, game engine"
-    settings = "os", "compiler", "build_type", "arch"
-
-    options = {
-        "shared": [True, False],
-    }
-
-    default_options = {
-        "shared": False,
-    }
-
-    generators = "cmake"
-    exports_sources = "include/*"
+    exports_sources = "include/*", "CMakeLists.txt"
 
     def build(self):
         cmake = CMake(self)
-        self.run("cmake .. %s" % (cmake.command_line))
-        self.run("cmake --build . %s" % cmake.build_config)
-
+        cmake.configure()
+        cmake.build()
 
     def package(self):
-        self.copy("*", dst="include", src="include")
+        self.copy("*", src="include", dst="include")
 
     def package_info(self):
-        self.cpp_info.libs = ["asl"]
-
+        self.info.header_only()
