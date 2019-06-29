@@ -26,7 +26,8 @@ namespace asl
     using f64 = double;
 
     using sizei = std::size_t;
-    using sizes = asl::i32;
+    using ssize = asl::i64;
+    using usize = asl::u64;
 
     template <typename T, typename Constraint, typename Phantom>
     class constrained_type
