@@ -20,14 +20,12 @@ namespace gsl
         constexpr span(null_span)
             : m_ptr(nullptr)
             , m_size(0)
-            , m_sanityCheck(false)
         {
         }
 
         constexpr span()
             : m_ptr(nullptr)
             , m_size(0)
-            , m_sanityCheck(false)
         { }
 
         template <typename Container, std::enable_if_t<!std::is_same_v<Container, span>>>
@@ -35,7 +33,6 @@ namespace gsl
             : m_ptr(container.data())
             , m_size(container.size())
         {
-            sanity_check();
         }
 
         template <typename Container, std::enable_if_t<!std::is_same_v<Container, span>>>
@@ -43,21 +40,18 @@ namespace gsl
             : m_ptr(container.data())
             , m_size(container.size())
         {
-            sanity_check();
         }
 
         constexpr span(T* begin, T* end) noexcept
             : m_ptr(begin)
             , m_size(end - begin)
         {
-            sanity_check();
         }
 
         constexpr span(T* ptr, asl::sizei size) noexcept
             : m_ptr(ptr)
             , m_size(size)
         {
-            sanity_check();
         }
 
         template <asl::sizei N>
@@ -65,22 +59,17 @@ namespace gsl
             : m_ptr(arr)
             , m_size(N)
         {
-            sanity_check();
         }
 
         constexpr span(const span& oth) noexcept
             : m_ptr(oth.m_ptr)
             , m_size(oth.m_size)
-            , m_sanityCheck(oth.m_sanityCheck)
         { }
 
         constexpr span& operator=(const span& oth) noexcept
         {
             m_ptr = oth.m_ptr;
             m_size = oth.m_size;
-            m_sanityCheck = oth.m_sanityCheck;
-
-            sanity_check();
 
             return *this;
         }
@@ -88,25 +77,19 @@ namespace gsl
         constexpr span(span&& oth) noexcept
             : m_ptr(std::exchange(oth.m_ptr, nullptr))
             , m_size(std::exchange(oth.m_size, 0))
-            , m_sanityCheck(std::exchange(oth.m_sanityCheck, false))
         {
-            sanity_check();
         }
 
         constexpr span& operator=(span&& oth) noexcept
         {
             m_ptr = std::exchange(oth.m_ptr, nullptr);
             m_size = std::exchange(oth.m_size, 0);
-            m_sanityCheck = std::exchange(oth.m_sanityCheck, false);
-
-            sanity_check();
 
             return *this;
         }
 
         constexpr asl::sizei size() const noexcept
         {
-            sanity_check();
             return m_size;
         }
 
@@ -117,65 +100,55 @@ namespace gsl
 
         constexpr T* get() noexcept
         {
-            sanity_check();
             return m_ptr;
         }
 
         constexpr const T* get() const noexcept
         {
-            sanity_check();
             return m_ptr;
         }
 
         constexpr T* begin() noexcept
         {
-            sanity_check();
             return m_ptr;
         }
 
         constexpr T* end() noexcept
         {
-            sanity_check();
             return m_ptr + m_size;
         }
 
         constexpr const T* begin() const noexcept
         {
-            sanity_check();
             return m_ptr;
         }
 
         constexpr const T* end() const noexcept
         {
-            sanity_check();
             return m_ptr + m_size;
         }
 
         constexpr T& at(asl::sizei index) noexcept
         {
             Expects(index < m_size, "[gsl/span] Index out of bounds");
-            sanity_check();
             return *(m_ptr + index);
         }
 
         constexpr const T& at(asl::sizei index) const noexcept
         {
             Expects(index < m_size, "[gsl/span] Index out of bounds");
-            sanity_check();
             return *(m_ptr + index);
         }
 
         constexpr T& operator[](asl::sizei index) noexcept
         {
             Expects(index < m_size, "[gsl/span] Index out of bounds");
-            sanity_check();
             return *(m_ptr + index);
         }
 
         constexpr const T& operator[](asl::sizei index) const noexcept
         {
             Expects(index < m_size, "[gsl/span] Index out of bounds");
-            sanity_check();
             return *(m_ptr + index);
         }
 
@@ -191,23 +164,14 @@ namespace gsl
                 end = m_size;
             }
 
-            Ensures(start >= 0 && start < m_size && end <= m_size, "[gsl/span] Invalid subspan range!");
+            Ensures((start >= 0) && (start < m_size) && (end <= m_size), "[gsl/span] Invalid subspan range!");
             return span{ m_ptr + start, end - start };
         }
 
     private:
 
-        constexpr void sanity_check() const noexcept 
-        {
-            if (m_sanityCheck)
-            {
-                Ensures(m_ptr != nullptr && m_size > 0, "[gsl/span] Container should point to something!");
-            }
-        }
-
         T* m_ptr;
         asl::sizei m_size;
-        bool m_sanityCheck{true};
     };
 
     template <typename Container>
