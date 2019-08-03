@@ -25,8 +25,7 @@ namespace asl
     using f32 = float;
     using f64 = double;
 
-    using sizei = std::size_t;
-    using ssize = asl::i64;
+    using isize = asl::i64;
     using usize = asl::u64;
 
     template <typename T, typename Constraint, typename Phantom>
@@ -119,6 +118,43 @@ namespace asl
         T value;
     };
 
+    template <typename Container>
+    auto ssize(const Container& container)
+    {
+        if constexpr(std::is_signed_v<decltype(container.size())>)
+        {
+            return container.size();
+        }
+
+        using signed_type = std::make_signed_t<decltype(container.size())>;
+        return static_cast<signed_type>(container.size());
+    }
+
+    template <typename Container, typename Index>
+    auto saccess(Container& container, Index idx) -> decltype(container[idx])
+    {
+        if constexpr (std::is_unsigned_v<Index>)
+        {
+            return container[idx];
+        }
+
+        using unsigned_type = std::make_unsigned_t<Index>;
+
+        return container[static_cast<unsigned_type>(idx)];
+    }
+
+    template <typename Container, typename Index>
+    auto saccess(const Container& container, Index idx) -> decltype(container[idx])
+    {
+        if constexpr (std::is_unsigned_v<Index>)
+        {
+            return container[idx];
+        }
+
+        using unsigned_type = std::make_unsigned_t<Index>;
+
+        return container[static_cast<unsigned_type>(idx)];
+    }
 } // namespace asl
 
 // vim: ft=cpp

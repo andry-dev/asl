@@ -72,7 +72,7 @@ namespace asl
     constexpr bool either = disjunction<bool_constant<Bs>...>::value;
 
     template <bool... Bs>
-    constexpr bool disallow = not require<Bs...>;
+    constexpr bool disallow = !require<Bs...>;
 
     template <template <class...> class Op, class... Args>
     constexpr bool exists = is_detected<Op, Args...>::value;

@@ -38,12 +38,12 @@ namespace asl
         std::copy_if(std::begin(src), std::begin(src), std::begin(dest), std::forward<Func>(f));
     }
 
-    template <const asl::sizei Index = 0, typename Func, typename... Ts>
+    template <const asl::isize Index = 0, typename Func, typename... Ts>
     inline constexpr std::enable_if_t<Index == sizeof...(Ts), void>
     for_each_tuple(std::tuple<Ts...>, Func) noexcept
     { }
 
-    template <const asl::sizei Index = 0, typename Func, typename... Ts>
+    template <const asl::isize Index = 0, typename Func, typename... Ts>
     inline constexpr std::enable_if_t<Index < sizeof...(Ts), void>
     for_each_tuple(std::tuple<Ts...> t, Func f) noexcept
     {
