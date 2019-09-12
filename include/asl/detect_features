@@ -90,16 +90,36 @@
 
 #if defined(_MSC_VER)
     #define ASL_MSVC
-#elif defined(__GNUC__)
+#endif
+
+#if defined(__GNUC__)
     #define ASL_GCC
-#elif defined(__clang__)
+#endif
+
+#if defined(__clang__)
     #define ASL_CLANG
-#elif defined(__MINGW32__)
+#endif
+
+#if defined(__MINGW32__)
     #define ASL_MINGW32
-#elif defined(__MINGW64__)
+#endif
+
+#if defined(__MINGW64__)
     #define ASL_MINGW32
     #define ASL_MINGW64
-#else
+#endif
+
+#if defined(ASL_GCC) && !defined(ASL_CLANG)
+    #define ASL_STRICT_GCC
+#endif
+
+
+#if !defined(ASL_GCC) && \
+    !defined(ASL_MSVC) && \
+    !defined(ASL_CLANG) && \
+    !defined(ASL_MINGW32) && \
+    !defined(ASL_MINGW64)
+
     #define ASL_UNKNOWN_COMPILER
 #endif
 
