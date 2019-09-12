@@ -114,25 +114,25 @@ namespace gsl
         inline constexpr string_span
         operator""_ss(const char* str, const asl::usize size) noexcept
         {
-            return { str, size };
+            return { str, asl::isize(size) };
         }
 
         inline constexpr u16string_span
         operator""_ss(const char16_t* str, const asl::usize size) noexcept
         {
-            return { str, size };
+            return { str, asl::isize(size) };
         }
 
         inline constexpr u32string_span
         operator""_ss(const char32_t* str, const asl::usize size) noexcept
         {
-            return { str, size };
+            return { str, asl::isize(size) };
         }
 
         inline constexpr wstring_span
         operator""_ss(const wchar_t* str, const asl::usize size) noexcept
         {
-            return { str, size };
+            return { str, asl::isize(size) };
         }
     }
 

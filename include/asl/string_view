@@ -118,7 +118,7 @@ namespace asl
 
             return strings_equal(this->begin(), rhs.begin(), size);
         }
-        
+
         constexpr bool operator!=(basic_string_view<CharT> rhs) const noexcept
         {
             return !(*this == rhs);
@@ -171,22 +171,22 @@ namespace asl
     {
         constexpr asl::string_view operator""_sv(const char* str, const asl::usize len) noexcept
         {
-            return asl::string_view{ str, len };
+            return asl::string_view{ str, asl::isize(len) };
         }
 
         constexpr asl::u16string_view operator""_sv(const char16_t* str, const asl::usize len) noexcept
         {
-            return asl::u16string_view{ str, len };
+            return asl::u16string_view{ str, asl::isize(len) };
         }
 
         constexpr asl::u32string_view operator""_sv(const char32_t* str, const asl::usize len) noexcept
         {
-            return asl::u32string_view{ str, len };
+            return asl::u32string_view{ str, asl::isize(len) };
         }
 
         constexpr asl::wstring_view operator""_sv(const wchar_t* str, const asl::usize len) noexcept
         {
-            return asl::wstring_view{ str, len };
+            return asl::wstring_view{ str, asl::isize(len) };
         }
     }
 }
