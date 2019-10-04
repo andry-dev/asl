@@ -168,6 +168,55 @@ namespace gsl
             return span{ m_ptr + start, end - start };
         }
 
+        constexpr friend span operator+(span lhs, asl::isize rhs) noexcept
+        {
+            Expects((rhs >= 0) && (rhs < lhs.m_size), "[gsl/span] Invalid subspan range!");
+
+            return span { lhs.m_ptr + rhs, lhs.m_size };
+        }
+
+        /*
+        constexpr friend span operator-(span lhs, asl::isize rhs) noexcept
+        {
+            return span { lhs.m_ptr - rhs, lhs.m_size };
+        }
+        */
+
+        constexpr friend asl::isize operator-(span lhs, span rhs) noexcept
+        {
+            return lhs.m_ptr - rhs.m_ptr;
+        }
+
+        constexpr bool operator==(span oth) const noexcept
+        {
+            return m_ptr == oth.m_ptr;
+        }
+
+        constexpr bool operator!=(span oth) const noexcept
+        {
+            return m_ptr != oth.m_ptr;
+        }
+
+        constexpr bool operator<(span oth) const noexcept
+        {
+            return m_ptr < oth.m_ptr;
+        }
+
+        constexpr bool operator<=(span oth) const noexcept
+        {
+            return m_ptr <= oth.m_ptr;
+        }
+
+        constexpr bool operator>(span oth) const noexcept
+        {
+            return m_ptr > oth.m_ptr;
+        }
+
+        constexpr bool operator>=(span oth) const noexcept
+        {
+            return m_ptr >= oth.m_ptr;
+        }
+
     private:
 
         T* m_ptr;
