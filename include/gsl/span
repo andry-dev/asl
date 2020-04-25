@@ -140,6 +140,26 @@ namespace gsl
             return *(m_ptr + index);
         }
 
+        constexpr T& front() noexcept
+        {
+            return (*this)[0];
+        }
+
+        constexpr const T& front() const noexcept
+        {
+            return (*this)[0];
+        }
+
+        constexpr T& back() noexcept
+        {
+            return (*this)[m_size - 1];
+        }
+
+        constexpr const T& back() const noexcept
+        {
+            return (*this)[m_size - 1];
+        }
+
         constexpr T& operator[](asl::isize index) noexcept
         {
             Expects(index < m_size, "[gsl/span] Index out of bounds");
